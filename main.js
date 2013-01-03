@@ -1,6 +1,7 @@
 
 var g_width = 320;
 var g_height = 240;
+var CHAR_SIZE = 16;
 
 function TitleMain(game) {
     this.initialize.apply(this, arguments);
@@ -74,9 +75,13 @@ function GameMain(game) {
 GameMain.prototype = new GameState;
 
 GameMain.prototype.update = function () {
+    this.game.field.move();
+    this.game.player.move();
 }
 
 GameMain.prototype.draw = function () {
+    this.game.field.draw(this.game);
+    this.game.player.draw(this.game);
 }
 
 function Game() {
@@ -87,9 +92,16 @@ Game.prototype = {
     px: 0,
     gameState: null,
     selfa: null,
+    field: null,
+    player: null,
     initialize: function() {
         this.px = 100;
-//        this.gameState = new TitleMain(this);
+
+        var f = new Field();
+        f.loadFieldData(field_data);
+        this.field = f;
+
+        this.player = new Player();
     },
     run: function() {
         this.update();
