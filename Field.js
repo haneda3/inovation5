@@ -67,6 +67,19 @@ Field.prototype = {
     move: function() {
         this.timer ++;
     },
+    getStartPoint: function() {
+        var v = {x:0, y:0};
+        for(var yy = 0 ;yy < this.FIELD_Y_MAX;yy++){
+            for(var xx = 0;xx < this.FIELD_X_MAX;xx++){
+                if(this.getField(xx,yy) == FIELD.ITEM_STARTPOINT){
+                    v.x = xx * CHAR_SIZE;
+                    v.y = yy * CHAR_SIZE;
+                    this.eraseField(xx,yy);
+                }
+            }
+        }
+        return v;
+    },
     isWall: function(x, y) {
         if(this.field[y * this.FIELD_X_MAX + x] != FIELD.NONE &&
             this.field[y * this.FIELD_X_MAX + x] != FIELD.HIDEPATH &&
@@ -104,11 +117,11 @@ Field.prototype = {
     eraseField: function(x,y) {
         this.field[y * this.FIELD_X_MAX + x] = FIELD.NONE;
     },
-    draw: function(game) {
+    draw: function(game, viewPosition) {
         game.fillRect(0,0,g_width,g_height,255,255,255);
 //        Vec2D v = gamemain.view.getPosition();
-        var v = {x: 100, y: 100};
-
+//        var v = {x: 100, y: 100};
+        var v = {x: viewPosition.x, y: viewPosition.y};
         var ofs_x = CHAR_SIZE - (v.x) % CHAR_SIZE;
         var ofs_y = CHAR_SIZE - (v.y) % CHAR_SIZE;
         for (var xx = -(g_width/CHAR_SIZE/2 + 2);xx < (g_width/CHAR_SIZE/2 + 2);xx++){

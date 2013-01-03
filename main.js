@@ -80,7 +80,7 @@ GameMain.prototype.update = function () {
 }
 
 GameMain.prototype.draw = function () {
-    this.game.field.draw(this.game);
+    this.game.field.draw(this.game, this.game.player.view.getPosition());
     this.game.player.draw(this.game);
 }
 
@@ -99,9 +99,10 @@ Game.prototype = {
 
         var f = new Field();
         f.loadFieldData(field_data);
-        this.field = f;
+        var startPoint = f.getStartPoint()
 
-        this.player = new Player();
+        this.field = f;
+        this.player = new Player(f);
     },
     run: function() {
         this.update();
