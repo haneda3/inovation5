@@ -60,9 +60,13 @@ Player.prototype = {
     state: 0,
     item_get: 0,
     wait_timer: 0,
+    game: null,
     view: null,
-    initialize: function(field) {
+    playerData: null,
+    initialize: function(game, field, playerData) {
         //gamemain = gm;
+        this.game = game;
+
         this.timer = 0;
         this.wait_timer = 0;
 
@@ -70,6 +74,7 @@ Player.prototype = {
         this.speed = {x: 0.0, y: 0.0};
         this.direction = 0;
 
+        this.playerData = playerData;
         //playerdata = gamemain.playerdata;
         this.life = 100;//playerdata.life_max * LIFE_RATIO;
         //field = gamemain.field;
@@ -147,12 +152,233 @@ Player.prototype = {
     },
 
     move: function() {
-        
+        switch(this.state) {
+            case PLAYERSTATE.START:			// 開始
+                this.wait_timer++;
+                if(this.wait_timer > START_WAIT_INTERVAL) this.state = PLAYERSTATE.NORMAL;
+                break;
+            case PLAYERSTATE.NORMAL:			// 通常
+                this.moveByInput();
+                this.moveNormal();
+
+                /*
+                // ライフ自動回復
+                if(life < playerdata.life_max * LIFE_RATIO){
+                    int o_life = life;
+                    life++;
+                    if(life / LIFE_RATIO != o_life / LIFE_RATIO) Hell_playWAV("heal");
+                }*/
+
+                break;
+
+            case PLAYERSTATE.ITEMGET:			// アイテム取ったどー!
+                moveItemGet();
+
+                // クリアチェック
+                if(playerdata.isGameClear() && state != STATE_ITEMGET) gamemain.setMsg(GameMain.MSG_REQ_ENDING);
+
+                break;
+
+            case PLAYERSTATE.MUTEKI:			// 無敵時間
+                moveByInput();
+                moveNormal();
+
+                wait_timer++;
+                if(wait_timer > MUTEKI_INTERVAL) state = STATE_NORMAL;
+                break;
+
+            case PLAYERSTATE.DEAD:			// 死亡
+                moveNormal();
+
+                Hell_stopBgm(0);
+                if(isPushEnter() && wait_timer > 15) gamemain.setMsg(GameState.MSG_REQ_TITLE);
+                break;
+            default:
+                break;
+        }
+        /*
+        if(life < LIFE_RATIO){			// 死亡
+            if(state != STATE_DEAD) wait_timer = 0;
+            state = STATE_DEAD;
+            direction = 0;
+            wait_timer++;
+        }*/
+    },
+
+    moveNormal: function() {
+        this.timer++;
+        this.playerData.playtime = (this.timer / 50);
+
+        // 移動＆落下
+        this.speed.y += PLAYER_GRAVITY;
+        this.position.x += this.speed.x;
+        this.position.y += this.speed.y;
+
+        if(this.speed.y > PLAYER_FALL_SPEEDMAX) this.speed.y = PLAYER_FALL_SPEEDMAX;
+
+        if(this.state == PLAYERSTATE.NORMAL) this.checkCollision();
+
+        // ATARI判定
+        var hitLeft = false , hitRight = false , hitUpper = false;
+        if(this.onWall() && this.speed.y >= 0){			// 着地判定
+            if(this.playerData.lunker_mode){	// ランカー・モード
+                if(this.position.y - this.jumped_point.y > LUNKER_JUMP_DAMAGE1){
+                    this.state = PLAYERSTATE.MUTEKI;
+                    this.wait_timer = 0;
+                    this.life -= LIFE_RATIO;
+                    //this.Hell_playWAV("damage");
+                }
+                if(this.position.y - this.jumped_point.y > LUNKER_JUMP_DAMAGE2){
+                    this.state = PLAYERSTATE.MUTEKI;
+                    this.wait_timer = 0;
+                    this.life -= LIFE_RATIO * 99;
+                    //Hell_playWAV("damage");
+                }
+            }
+
+            if(this.game.key.isEnter() && this.game.key.isDown() && this.isFallable()){
+                // 落下
+            }else{
+                if(this.speed.y > 0) this.speed.y = 0;
+                this.position.y = CHAR_SIZE * this.toFieldY();
+                this.jump_cnt = 0;
+            }
+
+            this.jumped_point.x = this.position.x;
+            this.jumped_point.y = this.position.y;
+        }
+        if(this.isLeftWall() && this.speed.x < 0) hitLeft = true;		// 左壁
+        if(this.isRightWall() && this.speed.x > 0) hitRight = true;	// 右壁
+        if(this.isUpperWall() && this.speed.y <= 0) hitUpper = true;	// 上壁
+
+
+        if(hitUpper && !hitLeft && !hitRight)	this.normalizeToUpper();
+        if(!hitUpper && hitLeft)		this.normalizeToLeft();
+        if(!hitUpper && hitRight) 		this.normalizeToRight();
+        if(hitUpper && hitRight){
+            if(this.isUpperWallBoth()){
+                this.normalizeToUpper();
+            }else{
+                if(this.toFieldOfsX() > this.toFieldOfsY()){
+                    this.normalizeToRight();
+                }else{
+                    this.normalizeToUpper();
+                }
+            }
+        }
+        if(hitUpper && hitLeft){
+            if(this.isUpperWallBoth()){
+                this.normalizeToUpper();
+            }else{
+                if(CHAR_SIZE - this.toFieldOfsX() > this.toFieldOfsY()){
+                    this.normalizeToLeft();
+                }else{
+                    this.normalizeToUpper();
+                }
+            }
+        }
+/*
+        // 床特殊効果
+        switch(this.getOnField()){
+            case Field.FIELD_SCROLL_L:
+                this.speed.x = this.speed.x * (1.0 - PLAYER_GRD_ACCRATIO) + (this.direction * PLAYER_SPEED - Field.SCROLLPANEL_SPEED) * PLAYER_GRD_ACCRATIO;
+                break;
+            case Field.FIELD_SCROLL_R:
+                this.speed.x = this.speed.x * (1.0 - PLAYER_GRD_ACCRATIO) + (this.direction * PLAYER_SPEED + Field.SCROLLPANEL_SPEED) * PLAYER_GRD_ACCRATIO;
+                break;
+            case Field.FIELD_SLIP:
+                break;
+            case  Field.FIELD_NONE:
+                this.speed.x = this.speed.x * (1.0 - PLAYER_AIR_ACCRATIO) + this.direction * PLAYER_SPEED * PLAYER_AIR_ACCRATIO;
+                break;
+            default:
+                this.speed.x = this.speed.x * (1.0 - PLAYER_GRD_ACCRATIO) + this.direction * PLAYER_SPEED * PLAYER_GRD_ACCRATIO;
+                break;
+        }*/
+
+        // ビューの更新
+        var v = this.view.getPosition();
+        v.x = v.x * 0.95 + (this.position.x + this.speed.x * VIEW_DIRECTION_OFFSET) * 0.05;
+        v.y = v.y * 0.95 + this.position.y * 0.05;
+        this.view.setPosition(v);
+    },
+    moveByInput: function() {
+        if(this.game.key.isLeft()) this.direction = -1;
+        if(this.game.key.isRight()) this.direction = 1;
+        /*
+        if(game.key.isEnter() &&(playerdata.jump_max > jump_cnt || onWall())&& !isPressDown()){
+            speed.y = PLAYER_JUMP;		// ジャンプ
+            if(!onWall()) jump_cnt++;
+
+            if(fabs(speed.x) < 0.1){
+                if(speed.x < 0)speed.x -= 0.02;
+                if(speed.x > 0)speed.x += 0.02;
+            }
+
+            Hell_playWAV("jump");
+
+            jumped_point.x = position.x;
+            jumped_point.y = position.y;
+        }*/
+    },
+
+    // 各種接触処理
+    checkCollision: function() {
+        for(var xx=0;xx<2;xx++){
+            for(var yy=0;yy<2;yy++){
+                // アイテム獲得(STATE_ITEMGETへ遷移)
+                if(this.field.isItem(this.toFieldX() + xx, this.toFieldY() + yy)){
+                    // 隠しアイテムは条件が必要
+                    if(!this.field.isItemGetable(this.toFieldX() + xx , this.toFieldY() + yy)) continue;
+
+                    this.state = PLAYERSTATE.ITEMGET;
+
+                    // アイテム効果
+                    this.item_get = this.field.getField(this.toFieldX() + xx , this.toFieldY() + yy);
+                    switch(this.field.getField(this.toFieldX() + xx , this.toFieldY() + yy))
+                    {
+                        case FIELD.ITEM_POWERUP:
+                            this.playerData.jump_max++;
+                            break;
+                        case FIELD.ITEM_LIFE:
+                            this.playerData.life_max++;
+                            this.life = this.playerData.life_max * LIFE_RATIO;
+                            break;
+                        default:
+                            this.playerData.itemGetFlags[this.item_get] = true;
+                            break;
+                    }
+                    this.field.eraseField(this.toFieldX() + xx, this.toFieldY() + yy);
+                    this.wait_timer = 0;
+
+                    /*
+                    Hell_stopBgm(0);
+                    if(this.playerdata.isItemForClear(item_get) || item_get == Field.FIELD_ITEM_POWERUP){
+                        Hell_playWAV("itemget");
+                    }else{
+                        Hell_playWAV("itemget2");
+                    }*/
+                    return;
+                }
+                // トゲ(ダメージ)
+                if(this.field.isSpike(this.toFieldX() + xx, this.toFieldY() + yy)){
+                    this.state = PLAYERSTATE.MUTEKI;
+                    this.wait_timer = 0;
+                    this.life -= LIFE_RATIO;
+                    this.speed.y = PLAYER_JUMP;
+                    this.jump_cnt = -1;			// ダメージ・エキストラジャンプ
+
+                    //Hell_playWAV("damage");
+
+                    return;
+                }
+            }
+        }
     },
     draw: function(game) {
         var v = this.view.toScreenPosition(this.position);
         if (this.state == PLAYERSTATE.DEAD){					// 死亡
-            var anime = ((this.timer / 6) % 4);
+            var anime = (~~(this.timer / 6) % 4);
             //if(playerdata.lunker_mode){
             //    Hell_draw("ino" , cast(int)v.x , cast(int)v.y , CHAR_SIZE * (2 + anime) , 128 + CHAR_SIZE * 2 , CHAR_SIZE,CHAR_SIZE);
             //}else{
@@ -160,7 +386,7 @@ Player.prototype = {
             //}
         } else {								// 生存
             if(this.state != PLAYERSTATE.MUTEKI || this.timer % 10 < 5){
-                var anime = ((this.timer / 6) % 2);
+                var anime = (~~(this.timer / 6) % 2);
                 if(!this.onWall()) anime = 0;
                 if(this.direction < 0){
                     //if(playerdata.lunker_mode){

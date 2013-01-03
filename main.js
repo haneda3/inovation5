@@ -94,15 +94,15 @@ Game.prototype = {
     selfa: null,
     field: null,
     player: null,
+    playerData: null,
     initialize: function() {
         this.px = 100;
 
         var f = new Field();
         f.loadFieldData(field_data);
-        var startPoint = f.getStartPoint()
-
         this.field = f;
-        this.player = new Player(f);
+        this.playerData = new PlayerData();
+        this.player = new Player(this, f, this.playerData);
     },
     run: function() {
         this.update();

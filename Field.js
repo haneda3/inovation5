@@ -65,16 +65,18 @@ Field.prototype = {
         }
     },
     move: function() {
-        this.timer ++;
+//        this.timer ++;
     },
     getStartPoint: function() {
         var v = {x:0, y:0};
         for(var yy = 0 ;yy < this.FIELD_Y_MAX;yy++){
             for(var xx = 0;xx < this.FIELD_X_MAX;xx++){
+                console.log("" + xx + "," + yy + " " + this.getField(xx, yy));
                 if(this.getField(xx,yy) == FIELD.ITEM_STARTPOINT){
                     v.x = xx * CHAR_SIZE;
                     v.y = yy * CHAR_SIZE;
                     this.eraseField(xx,yy);
+                    console.log("hit");
                 }
             }
         }
@@ -124,10 +126,10 @@ Field.prototype = {
         var v = {x: viewPosition.x, y: viewPosition.y};
         var ofs_x = CHAR_SIZE - (v.x) % CHAR_SIZE;
         var ofs_y = CHAR_SIZE - (v.y) % CHAR_SIZE;
-        for (var xx = -(g_width/CHAR_SIZE/2 + 2);xx < (g_width/CHAR_SIZE/2 + 2);xx++){
+        for (var xx = -(~~(g_width/CHAR_SIZE/2) + 2);xx < (~~(g_width/CHAR_SIZE/2) + 2);xx++){
             var fx = xx + ~~(v.x / CHAR_SIZE);
             if(fx < 0 || fx >= this.FIELD_X_MAX ) continue;
-            for(var yy = -(g_height/CHAR_SIZE/2 + 2);yy < (g_height/CHAR_SIZE/2 + 2);yy++){
+            for(var yy = -(~~(g_height/CHAR_SIZE/2) + 2);yy < (~~(g_height/CHAR_SIZE/2) + 2);yy++){
                 var fy = yy + ~~(v.y / CHAR_SIZE);
                 if( fy < 0 || fy >= this.FIELD_Y_MAX) continue;
 
