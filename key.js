@@ -2,14 +2,16 @@ KEY_CODE = {
     LEFT: 37,
     UP: 38,
     RIGHT: 39,
-    DOWN: 40
+    DOWN: 40,
+    ENTER: 13
 };
 
 INPUT_BIT = {
     LEFT: 0x01,
     RIGHT: 0x02,
     UP: 0x04,
-    DOWN: 0x08
+    DOWN: 0x08,
+    ENTER: 0x10
 }
 
 function Key() {
@@ -43,6 +45,10 @@ Key.prototype = {
                 this.keyFlags |= INPUT_BIT.DOWN;
                 event.preventDefault();
                 break;
+            case KEY_CODE.ENTER:
+                this.keyFlags |= INPUT_BIT.ENTER;
+                event.preventDefault();
+                break;
         }
     },
 
@@ -64,6 +70,10 @@ Key.prototype = {
                 this.keyFlags &= ~INPUT_BIT.DOWN;
                 event.preventDefault();
                 break;
+            case KEY_CODE.ENTER:
+                this.keyFlags &= ~INPUT_BIT.ENTER;
+                event.preventDefault();
+                break;
         }
     },
 
@@ -78,6 +88,9 @@ Key.prototype = {
     },
     isDown: function() {
         return (this.keyFlags & INPUT_BIT.DOWN);
+    },
+    isEnter: function() {
+        return (this.keyFlags & INPUT_BIT.ENTER);
     }
 }
 
