@@ -161,21 +161,23 @@ Player.prototype = {
                 this.moveByInput();
                 this.moveNormal();
 
-                /*
                 // ライフ自動回復
-                if(life < playerdata.life_max * LIFE_RATIO){
-                    int o_life = life;
-                    life++;
-                    if(life / LIFE_RATIO != o_life / LIFE_RATIO) Hell_playWAV("heal");
-                }*/
-
+                if(this.life < this.playerData.life_max * LIFE_RATIO){
+                    var o_life = this.life;
+                    this.life++;
+                    if (this.life / LIFE_RATIO != o_life / LIFE_RATIO) {
+                        //Hell_playWAV("heal");
+                    }
+                }
                 break;
 
             case PLAYERSTATE.ITEMGET:			// アイテム取ったどー!
-                moveItemGet();
+                this.moveItemGet();
 
                 // クリアチェック
-                if(playerdata.isGameClear() && state != STATE_ITEMGET) gamemain.setMsg(GameMain.MSG_REQ_ENDING);
+//                if(this.playerData.isGameClear() && state != STATE_ITEMGET) {
+                    //gamemain.setMsg(GameMain.MSG_REQ_ENDING);
+//                }
 
                 break;
 
@@ -236,7 +238,7 @@ Player.prototype = {
                 }
             }
 
-            if(this.game.key.isEnter() && this.game.key.isDown() && this.isFallable()){
+            if(this.game.key.isSpace() && this.game.key.isDown() && this.isFallable()){
                 // 落下
             }else{
                 if(this.speed.y > 0) this.speed.y = 0;
@@ -277,24 +279,24 @@ Player.prototype = {
                 }
             }
         }
-/*
+
         // 床特殊効果
         switch(this.getOnField()){
-            case Field.FIELD_SCROLL_L:
-                this.speed.x = this.speed.x * (1.0 - PLAYER_GRD_ACCRATIO) + (this.direction * PLAYER_SPEED - Field.SCROLLPANEL_SPEED) * PLAYER_GRD_ACCRATIO;
+            case FIELD.SCROLL_L:
+                this.speed.x = this.speed.x * (1.0 - PLAYER_GRD_ACCRATIO) + (this.direction * PLAYER_SPEED - this.field.SCROLLPANEL_SPEED) * PLAYER_GRD_ACCRATIO;
                 break;
-            case Field.FIELD_SCROLL_R:
-                this.speed.x = this.speed.x * (1.0 - PLAYER_GRD_ACCRATIO) + (this.direction * PLAYER_SPEED + Field.SCROLLPANEL_SPEED) * PLAYER_GRD_ACCRATIO;
+            case FIELD.SCROLL_R:
+                this.speed.x = this.speed.x * (1.0 - PLAYER_GRD_ACCRATIO) + (this.direction * PLAYER_SPEED + this.field.SCROLLPANEL_SPEED) * PLAYER_GRD_ACCRATIO;
                 break;
-            case Field.FIELD_SLIP:
+            case FIELD.SLIP:
                 break;
-            case  Field.FIELD_NONE:
+            case FIELD.NONE:
                 this.speed.x = this.speed.x * (1.0 - PLAYER_AIR_ACCRATIO) + this.direction * PLAYER_SPEED * PLAYER_AIR_ACCRATIO;
                 break;
             default:
                 this.speed.x = this.speed.x * (1.0 - PLAYER_GRD_ACCRATIO) + this.direction * PLAYER_SPEED * PLAYER_GRD_ACCRATIO;
                 break;
-        }*/
+        }
 
         // ビューの更新
         var v = this.view.getPosition();
@@ -302,24 +304,36 @@ Player.prototype = {
         v.y = v.y * 0.95 + this.position.y * 0.05;
         this.view.setPosition(v);
     },
+    moveItemGet: function() {
+        if(this.wait_timer < WAIT_TIMER_INTERVAL){
+            this.wait_timer ++;
+            return;
+        }
+
+        if(this.game.key.isSpace()){
+            this.state = PLAYERSTATE.NORMAL;
+
+            //Hell_playBgm("./resource/sound/ino1.ogg");
+        }
+    },
     moveByInput: function() {
         if(this.game.key.isLeft()) this.direction = -1;
         if(this.game.key.isRight()) this.direction = 1;
-        /*
-        if(game.key.isEnter() &&(playerdata.jump_max > jump_cnt || onWall())&& !isPressDown()){
-            speed.y = PLAYER_JUMP;		// ジャンプ
-            if(!onWall()) jump_cnt++;
 
-            if(fabs(speed.x) < 0.1){
-                if(speed.x < 0)speed.x -= 0.02;
-                if(speed.x > 0)speed.x += 0.02;
+        if(this.game.key.isSpace() &&(this.playerData.jump_max > this.jump_cnt || this.onWall())&& !this.game.key.isDown()){
+            this.speed.y = PLAYER_JUMP;		// ジャンプ
+            if(!this.onWall()) this.jump_cnt++;
+
+            if(Math.abs(this.speed.x) < 0.1){
+                if(this.speed.x < 0) this.speed.x -= 0.02;
+                if(this.speed.x > 0) this.speed.x += 0.02;
             }
 
-            Hell_playWAV("jump");
+            //Hell_playWAV("jump");
 
-            jumped_point.x = position.x;
-            jumped_point.y = position.y;
-        }*/
+            this.jumped_point.x = this.position.x;
+            this.jumped_point.y = this.position.y;
+        }
     },
 
     // 各種接触処理
@@ -372,6 +386,23 @@ Player.prototype = {
 
                     return;
                 }
+            }
+        }
+    },
+    // 乗っているものを返す
+    getOnField: function() {
+        if(!this.onWall())return FIELD.NONE;
+        if(this.toFieldOfsX() < CHAR_SIZE / 2){
+            if(this.field.isRidable( this.toFieldX()	  ,this.toFieldY() + 1 )){
+                return this.field.getField( this.toFieldX() , this.toFieldY() + 1);
+            }else{
+                return this.field.getField( this.toFieldX() + 1 , this.toFieldY() + 1);
+            }
+        }else{
+            if(this.field.isRidable( this.toFieldX() + 1,this.toFieldY() + 1 )){
+                return this.field.getField( this.toFieldX() + 1 , this.toFieldY() + 1);
+            }else{
+                return this.field.getField( this.toFieldX() , this.toFieldY() + 1);
             }
         }
     },

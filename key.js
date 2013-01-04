@@ -3,7 +3,8 @@ KEY_CODE = {
     UP: 38,
     RIGHT: 39,
     DOWN: 40,
-    ENTER: 13
+    ENTER: 13,
+    SPACE: 32
 };
 
 INPUT_BIT = {
@@ -11,7 +12,8 @@ INPUT_BIT = {
     RIGHT: 0x02,
     UP: 0x04,
     DOWN: 0x08,
-    ENTER: 0x10
+    ENTER: 0x10,
+    SPACE: 0x20
 }
 
 function Key() {
@@ -49,6 +51,10 @@ Key.prototype = {
                 this.keyFlags |= INPUT_BIT.ENTER;
                 event.preventDefault();
                 break;
+            case KEY_CODE.SPACE:
+                this.keyFlags |= INPUT_BIT.SPACE;
+                event.preventDefault();
+                break;
         }
     },
 
@@ -74,6 +80,10 @@ Key.prototype = {
                 this.keyFlags &= ~INPUT_BIT.ENTER;
                 event.preventDefault();
                 break;
+            case KEY_CODE.SPACE:
+                this.keyFlags &= ~INPUT_BIT.SPACE;
+                event.preventDefault();
+                break;
         }
     },
 
@@ -91,6 +101,9 @@ Key.prototype = {
     },
     isEnter: function() {
         return (this.keyFlags & INPUT_BIT.ENTER);
+    },
+    isSpace: function() {
+        return (this.keyFlags & INPUT_BIT.SPACE);
     }
 }
 

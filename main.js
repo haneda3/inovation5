@@ -158,7 +158,7 @@ function init() {
     }
 
     var game = new Game();
-    game.fps = 30;
+    game.fps = 50;
     game.context = canvas.getContext('2d');
 
     var key = new Key();

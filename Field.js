@@ -138,7 +138,7 @@ Field.prototype = {
 
                 if(this.isItem(fx,fy)){
                     gx = gx - (FIELD.ITEM_BORDER + 1);
-                    gy = 4 + (gx / 16);
+                    gy = 4 + ~~(gx / 16);
                     gx = gx % 16;
                 }
 
@@ -148,7 +148,6 @@ Field.prototype = {
                     (xx + 12)* CHAR_SIZE + ofs_x + this.GRAPHIC_OFFSET_X + (g_width - 320)/2,
                     (yy + 8) * CHAR_SIZE + ofs_y + this.GRAPHIC_OFFSET_Y + (g_height - 240)/2,
                     gx * 16 , gy * 16 , 16,16);
-
                 /*	// デバッグ用
                  Hell_drawFont(std.string.toString(field[fy * FIELD_X_MAX + fx]),
                  (xx + 12)* CHAR_SIZE + ofs_x + GRAPHIC_OFFSET_X,
