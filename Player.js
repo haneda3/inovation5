@@ -182,29 +182,31 @@ Player.prototype = {
                 break;
 
             case PLAYERSTATE.MUTEKI:			// 無敵時間
-                moveByInput();
-                moveNormal();
+                this.moveByInput();
+                this.moveNormal();
 
-                wait_timer++;
-                if(wait_timer > MUTEKI_INTERVAL) state = STATE_NORMAL;
+                this.wait_timer++;
+                if(this.wait_timer > MUTEKI_INTERVAL) this.state = PLAYERSTATE.NORMAL;
                 break;
 
             case PLAYERSTATE.DEAD:			// 死亡
-                moveNormal();
+                this.moveNormal();
 
-                Hell_stopBgm(0);
-                if(isPushEnter() && wait_timer > 15) gamemain.setMsg(GameState.MSG_REQ_TITLE);
+                //Hell_stopBgm(0);
+                if(this.game.key.isSpace() && this.wait_timer > 15) {
+                    this.game.gameState.setMsg(GAMESTATE.MSG_REQ_TITLE);
+                }
                 break;
             default:
                 break;
         }
-        /*
-        if(life < LIFE_RATIO){			// 死亡
-            if(state != STATE_DEAD) wait_timer = 0;
-            state = STATE_DEAD;
-            direction = 0;
-            wait_timer++;
-        }*/
+
+        if (this.life < LIFE_RATIO){			// 死亡
+            if(this.state != PLAYERSTATE.DEAD) this.wait_timer = 0;
+            this.state = PLAYERSTATE.DEAD;
+            this.direction = 0;
+            this.wait_timer++;
+        }
     },
 
     moveNormal: function() {
@@ -434,5 +436,53 @@ Player.prototype = {
                 }
             }
         }
+
+        /*	// でばぐ
+         Hell_drawFont(" I:" ~ std.string.toString(playerdata.getItemCount()) , 0,16);
+         Hell_drawFont(" J:" ~ std.string.toString(jump_cnt) ~ " MJ:" ~ std.string.toString(jump_max) , 0,9);
+         Hell_drawFont(" X:" ~ std.string.toString(cast(int)position.x) ~ " FX:" ~ std.string.toString(toFieldX()) ~ " OX:" ~ std.string.toString(toFieldOfsX()) , 0,18);
+         Hell_drawFont(" Y:" ~ std.string.toString(cast(int)position.y) ~ " FY:" ~ std.string.toString(toFieldY()) ~ " OY:" ~ std.string.toString(toFieldOfsY()) , 0,27);
+         */
+
+        // ライフ表示
+        for(var t=0;t<this.playerData.life_max;t++){
+            if(this.life < LIFE_RATIO * 2 && this.timer % 10 < 5 && this.playerData.life_max > 1) continue;
+
+            if(this.life >= (t + 1) * LIFE_RATIO){
+                game.draw("ino" , CHAR_SIZE * t , 0 , CHAR_SIZE * 3 , 128 + CHAR_SIZE * 1 , CHAR_SIZE,CHAR_SIZE);
+            }else{
+                game.draw("ino" , CHAR_SIZE * t , 0 , CHAR_SIZE * 4 , 128 + CHAR_SIZE * 1 , CHAR_SIZE,CHAR_SIZE);
+            }
+        }
+
+        // 取ったアイテム一覧
+        for(var t=FIELD.ITEM_FUJI ; t<FIELD.ITEM_MAX ; t++){
+            if(!this.playerData.itemGetFlags[t] || (this.playerData.isItemForClear(t) && this.timer % 10 < 5)){
+                game.draw("ino" , g_width - CHAR_SIZE / 4 * (FIELD.ITEM_MAX - 2 - t) , 0 ,	// 無
+                    CHAR_SIZE * 5 , 128 + CHAR_SIZE , CHAR_SIZE / 4 , CHAR_SIZE / 2);
+            }else{
+                game.draw("ino" , g_width - CHAR_SIZE / 4 * (FIELD.ITEM_MAX - 2 - t) , 0 ,	// 有
+                    CHAR_SIZE * 5 + CHAR_SIZE / 4 , 128 + CHAR_SIZE  , CHAR_SIZE / 4 , CHAR_SIZE / 2);
+            }
+        }
+
+
+        // アイテム獲得メッセージ
+        if(this.state == PLAYERSTATE.ITEMGET){
+            var t = WAIT_TIMER_INTERVAL - this.wait_timer;
+            game.draw("msg" , (g_width - 256) / 2 , (g_height - 96) / 2 - t * t + 24 ,
+                256 , 96 * (this.item_get - FIELD.ITEM_BORDER - 1), 256 , 96);
+            game.fillRect((g_width - 32) / 2 , (g_height - 96) / 2 - t * t - 24 ,32,32,0,0,0);
+            game.fillRect((g_width - 32) / 2  + 2, (g_height - 96) / 2 - t * t - 24 + 2,32 - 4,32 - 4,255,255,255);
+
+            var it = this.item_get - (FIELD.ITEM_BORDER + 1);
+            game.draw("ino" , (g_width - 16) / 2 , (g_height - 96) / 2 - t * t - 16 ,
+                (it % 16) * CHAR_SIZE, (it / 16 + 4) * CHAR_SIZE , CHAR_SIZE , CHAR_SIZE);
+        }
+
+        // ゲーム開始メッセージ
+        if(this.state == PLAYERSTATE.START) game.draw("msg", (g_width - 256) / 2 ,  64+(g_height-240)/2 , 0 , 96 , 256 , 32);
+        // ゲームオーバーメッセージ
+        if(this.state == PLAYERSTATE.DEAD) game.draw("msg", (g_width - 256) / 2 ,  64+(g_height-240)/2 , 0 , 128 , 256 , 32);
     }
 }

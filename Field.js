@@ -46,6 +46,7 @@ Field.prototype = {
     FIELD_Y_MAX: 128,
     GRAPHIC_OFFSET_X: -16 - 16*2,
     GRAPHIC_OFFSET_Y:  8 - 16*2,
+    SCROLLPANEL_SPEED: 2.0,
     initialize: function() {
         this.field = new Array(this.FIELD_X_MAX * this.FIELD_Y_MAX);
         this.timer = 0;

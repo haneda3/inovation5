@@ -13,6 +13,10 @@ PlayerData.prototype = {
     jump_max: 0,
     life_max: 0,
     lunker_mode: false,
+//    static const int CLEAR_FLAG_ITEM[] = [
+//        Field.FIELD_ITEM_FUJI , Field.FIELD_ITEM_TAKA , Field.FIELD_ITEM_NASU
+//    ];
+    clearFlagItems: [FIELD.ITEM_FUJI, FIELD.ITEM_TAKA, FIELD.ITEM_NASU],
     initialize: function(gameMode) {
         this.itemGetFlags = {};
         for (var t=0;t<FIELD.ITEM_MAX;t++) {
@@ -38,5 +42,12 @@ PlayerData.prototype = {
                 this.lunker_mode = false;
                 break;
         }
+    },
+    isItemForClear: function(it) {
+        for (var i = 0 ; i < this.clearFlagItems.length ; i ++) {
+            var e = this.clearFlagItems[i];
+            if (e == it) return true;
+        }
+        return false;
     }
 }
