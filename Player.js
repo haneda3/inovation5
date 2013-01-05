@@ -76,7 +76,7 @@ Player.prototype = {
 
         this.playerData = playerData;
         //playerdata = gamemain.playerdata;
-        this.life = 100;//playerdata.life_max * LIFE_RATIO;
+        this.life = playerData.life_max * LIFE_RATIO;
         //field = gamemain.field;
         var startPoint = field.getStartPoint();
         this.position = startPoint;
