@@ -3,8 +3,6 @@ var g_width = 320;
 var g_height = 240;
 var CHAR_SIZE = 16;
 
-var inputDevice = new InputDevice();
-
 function TitleMain(game) {
     this.initialize.apply(this, arguments);
 }
@@ -14,6 +12,8 @@ TitleMain.prototype = new GameState;
 TitleMain.prototype.timer = 0;
 TitleMain.prototype.offset_x = 0;
 TitleMain.prototype.offset_y = 0;
+TitleMain.prototype.lunker_mode = GAMEMODE.NORMAL;
+TitleMain.prototype.lunker_command = 0;
 
 TitleMain.prototype.update = function () {
     this.timer ++;
@@ -22,24 +22,53 @@ TitleMain.prototype.update = function () {
         this.offset_y = (Math.random() * 3000 / 11) % 5 - 3;
     }
 
-    if(this.game.key.isPressSpace() && this.timer > 5){
+    var key = this.game.key;
+    if(key.isPushSpace() && this.timer > 5){
         this.setMsg(GAMESTATE.MSG_REQ_OPENING);
 
-//        if(islunker){
-//            g_playerdata.init(PlayerData.GAMEMODE_LUNKER);
-//        }else{
-//            g_playerdata.init(PlayerData.GAMEMODE_NORMAL);
-//        }
+        if (this.lunker_mode) {
+            this.game.playerData.initialize(GAMEMODE.LUNKER);
+        }else{
+            this.game.playerData.initialize(GAMEMODE.NORMAL);
+        }
     }
-}
+
+    // ランカー・モード・コマンド
+    switch(~~this.lunker_command){
+        case 0:
+        case 1:
+        case 2:
+        case 6:
+            if(key.isPushLeft()){
+                this.lunker_command++;
+            }else if(key.isPushRight() || key.isPushUp() || key.isPushDown()){
+                this.lunker_command = 0;
+            }
+            break;
+        case 3:
+        case 4:
+        case 5:
+        case 7:
+            if(key.isPushRight()){
+                this.lunker_command++;
+            }else if(key.isPushLeft() || key.isPushUp() || key.isPushDown()){
+                this.lunker_command = 0;
+            }
+            break;
+        default:
+            break;
+    }
+    if(this.lunker_command > 7){
+        this.lunker_command = 0;
+        this.lunker_mode = !this.lunker_mode;
+    }}
 
 TitleMain.prototype.draw = function() {
-//    if(islunker){
-//        Hell_fillRect(0,0,g_width,g_height,0,0,0);
-//    }else{
+    if(this.lunker_mode) {
+        this.game.fillRect(0,0,g_width,g_height,0,0,0);
+    }else{
         this.game.fillRect(0,0,g_width,g_height,255,255,255);
-//    }
-
+    }
 
     this.game.draw("msg", (g_width - 256) / 2 ,  32 + (g_height-240)/2 , 0 , 0 , 256 , 64);
     this.game.draw("msg", (g_width - 256) / 2 + this.offset_x  , 160 + this.offset_y + (g_height-240)/2 , 0 , 64 , 256 , 32);

@@ -51,17 +51,32 @@ InputDevice.prototype = {
     isPressLeft: function() {
         return this.isPressKey(KEY_CODE.LEFT);
     },
+    isPushLeft: function() {
+        return this.isPushKey(KEY_CODE.LEFT);
+    },
     isPressRight: function() {
         return this.isPressKey(KEY_CODE.RIGHT);
+    },
+    isPushRight: function() {
+        return this.isPushKey(KEY_CODE.RIGHT);
     },
     isPressUp: function() {
         return this.isPressKey(KEY_CODE.UP);
     },
+    isPushUp: function() {
+        return this.isPushKey(KEY_CODE.UP);
+    },
     isPressDown: function() {
         return this.isPressKey(KEY_CODE.DOWN);
     },
+    isPushDown: function() {
+        return this.isPushKey(KEY_CODE.DOWN);
+    },
     isPressEnter: function() {
         return this.isPressKey(KEY_CODE.ENTER);
+    },
+    isPushEnter: function() {
+        return this.isPushKey(KEY_CODE.ENTER);
     },
     isPressSpace: function() {
         return this.isPressKey(KEY_CODE.SPACE);
