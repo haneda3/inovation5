@@ -165,7 +165,7 @@ function init() {
     game.context = canvas.getContext('2d');
 //    alert('cx');
 
-    var key = new Key();
+    var key = new InputDevice();
     game.key = key;
 
     game.img = {};

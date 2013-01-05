@@ -16,11 +16,11 @@ INPUT_BIT = {
     SPACE: 0x20
 }
 
-function Key() {
+function InputDevice() {
     this.initialize.apply(this, arguments);
 }
 
-Key.prototype = {
+InputDevice.prototype = {
     keyFlags: 0x00,
     keyFlagsPrev: 0x00,
     initialize: function() {
