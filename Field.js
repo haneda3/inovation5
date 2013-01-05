@@ -74,12 +74,10 @@ Field.prototype = {
         var v = {x:0, y:0};
         for(var yy = 0 ;yy < this.FIELD_Y_MAX;yy++){
             for(var xx = 0;xx < this.FIELD_X_MAX;xx++){
-                console.log("" + xx + "," + yy + " " + this.getField(xx, yy));
                 if(this.getField(xx,yy) == FIELD.ITEM_STARTPOINT){
                     v.x = xx * CHAR_SIZE;
                     v.y = yy * CHAR_SIZE;
                     this.eraseField(xx,yy);
-                    console.log("hit");
                 }
             }
         }

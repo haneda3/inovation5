@@ -3,6 +3,8 @@ var g_width = 320;
 var g_height = 240;
 var CHAR_SIZE = 16;
 
+var inputDevice = new InputDevice();
+
 function TitleMain(game) {
     this.initialize.apply(this, arguments);
 }
@@ -20,7 +22,7 @@ TitleMain.prototype.update = function () {
         this.offset_y = (Math.random() * 3000 / 11) % 5 - 3;
     }
 
-    if(this.game.key.isPressEnter() && this.timer > 5){
+    if(this.game.key.isPressSpace() && this.timer > 5){
         this.setMsg(GAMESTATE.MSG_REQ_OPENING);
 
 //        if(islunker){
@@ -55,7 +57,7 @@ OpeningMain.prototype.SCROLL_SPEED = 3;
 OpeningMain.prototype.update = function () {
     this.timer ++;
 
-    if( this.game.key.isPressEnter() ) this.timer+=20;
+    if( this.game.key.isPressSpace() ) this.timer+=20;
     if( this.timer / this.SCROLL_SPEED > this.SCROLL_LEN + g_height){
         this.setMsg(GAMESTATE.MSG_REQ_GAME);
         //Hell_stopBgm(0);
@@ -77,7 +79,6 @@ GameMain.prototype = new GameState;
 GameMain.prototype.update = function () {
     this.game.field.move();
     this.game.player.move();
-    this.game.key.update();
 }
 
 GameMain.prototype.draw = function () {
@@ -91,15 +92,13 @@ function Game() {
 }
 
 Game.prototype = {
-    px: 0,
     gameState: null,
-    selfa: null,
+    self: null,
     field: null,
     player: null,
     playerData: null,
+    key: null,
     initialize: function() {
-        this.px = 100;
-
         this.playerData = new PlayerData(GAMEMODE.NORMAL);
 
         var f = new Field(this.playerData);
@@ -107,28 +106,14 @@ Game.prototype = {
         this.field = f;
         this.player = new Player(this, f, this.playerData);
     },
-    run: function() {
-        this.update();
-        if (this.key.isPressRight()) {
-            this.px ++;
-        }
-        if (this.key.isPressLeft()) {
-            this.px --;
-        }
-    },
-    update: function() {
-        this.context.drawImage(this.img, 0, 16 * 8, 16, 16, this.px, 0, 16, 16);
-    },
     start: function() {
         var self = this;
-//        this._intervalId = setInterval(self.run, 1000 / this.fps);
-//        this._intervalId = setInterval(function() {self.run();}, 1000 / self.fps);
-        selfa = self;
+        this.self = self;
         this._intervalId = setInterval(function() {self.loop();}, 1000 / self.fps);
     },
     loop: function() {
         if (this.gameState == null) {
-            this.gameState = new TitleMain(selfa);
+            this.gameState = new TitleMain(this.self);
         } else {
             switch (this.gameState.getMsg()) {
                 case GAMESTATE.MSG_REQ_TITLE:
@@ -144,6 +129,7 @@ Game.prototype = {
         }
         this.gameState.draw();
         this.gameState.update();
+        this.key.update();
     },
     fillRect: function(x, y, w, h, r, g, b) {
         this.context.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
@@ -165,8 +151,7 @@ function init() {
     game.context = canvas.getContext('2d');
 //    alert('cx');
 
-    var key = new InputDevice();
-    game.key = key;
+    game.key = new InputDevice();
 
     game.img = {};
     var img = new Image();
@@ -180,14 +165,4 @@ function init() {
             game.start();
         }
     }
-
-    /*
-    var img = new Image();
-    img.src = "resource/image/ino.png";
-    img.onload = function () {
-//                ctx.drawImage(img, 0, 0);
-//                ctx.drawImage(img, 0, 16 * 8, 16, 16, 0, 0, 32, 16);
-        game.img = img;
-        game.start();
-    }*/
 }

@@ -64,7 +64,6 @@ Player.prototype = {
     view: null,
     playerData: null,
     initialize: function(game, field, playerData) {
-        //gamemain = gm;
         this.game = game;
 
         this.timer = 0;
@@ -75,9 +74,7 @@ Player.prototype = {
         this.direction = 0;
 
         this.playerData = playerData;
-        //playerdata = gamemain.playerdata;
         this.life = playerData.life_max * LIFE_RATIO;
-        //field = gamemain.field;
         var startPoint = field.getStartPoint();
         this.position = startPoint;
         this.jumped_point = {x: startPoint.x, y:startPoint.y};
@@ -85,7 +82,6 @@ Player.prototype = {
         this.field = field;
         this.view = new View();
         this.view.setPosition(this.position);
-//        gamemain.view.setPosition(position);
 
 //        Hell_playBgm("./resource/sound/ino1.ogg");
     },
