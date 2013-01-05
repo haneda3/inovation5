@@ -175,9 +175,9 @@ Player.prototype = {
                 this.moveItemGet();
 
                 // クリアチェック
-//                if(this.playerData.isGameClear() && state != STATE_ITEMGET) {
-                    //gamemain.setMsg(GameMain.MSG_REQ_ENDING);
-//                }
+                if(this.playerData.isGameClear() && this.state != PLAYERSTATE.ITEMGET) {
+                    this.game.gameState.setMsg(GAMESTATE.MSG_REQ_ENDING);
+                }
 
                 break;
 
@@ -193,7 +193,7 @@ Player.prototype = {
                 this.moveNormal();
 
                 //Hell_stopBgm(0);
-                if(this.game.key.isSpace() && this.wait_timer > 15) {
+                if(this.game.key.isPressSpace() && this.wait_timer > 15) {
                     this.game.gameState.setMsg(GAMESTATE.MSG_REQ_TITLE);
                 }
                 break;
@@ -240,7 +240,7 @@ Player.prototype = {
                 }
             }
 
-            if(this.game.key.isSpace() && this.game.key.isDown() && this.isFallable()){
+            if(this.game.key.isPressSpace() && this.game.key.isPressDown() && this.isFallable()){
                 // 落下
             }else{
                 if(this.speed.y > 0) this.speed.y = 0;
@@ -312,29 +312,31 @@ Player.prototype = {
             return;
         }
 
-        if(this.game.key.isSpace()){
+        if(this.game.key.isPressSpace()){
             this.state = PLAYERSTATE.NORMAL;
 
             //Hell_playBgm("./resource/sound/ino1.ogg");
         }
     },
     moveByInput: function() {
-        if(this.game.key.isLeft()) this.direction = -1;
-        if(this.game.key.isRight()) this.direction = 1;
+        if(this.game.key.isPressLeft()) this.direction = -1;
+        if(this.game.key.isPressRight()) this.direction = 1;
 
-        if(this.game.key.isSpace() &&(this.playerData.jump_max > this.jump_cnt || this.onWall())&& !this.game.key.isDown()){
-            this.speed.y = PLAYER_JUMP;		// ジャンプ
-            if(!this.onWall()) this.jump_cnt++;
+        if(this.game.key.isPushSpace()) {
+            if (((this.playerData.jump_max > this.jump_cnt) || this.onWall()) && (this.game.key.isPressDown() == false)){
+                this.speed.y = PLAYER_JUMP;		// ジャンプ
+                if(!this.onWall()) this.jump_cnt++;
 
-            if(Math.abs(this.speed.x) < 0.1){
-                if(this.speed.x < 0) this.speed.x -= 0.02;
-                if(this.speed.x > 0) this.speed.x += 0.02;
+                if(Math.abs(this.speed.x) < 0.1){
+                    if(this.speed.x < 0) this.speed.x -= 0.02;
+                    if(this.speed.x > 0) this.speed.x += 0.02;
+                }
+
+                //Hell_playWAV("jump");
+
+                this.jumped_point.x = this.position.x;
+                this.jumped_point.y = this.position.y;
             }
-
-            //Hell_playWAV("jump");
-
-            this.jumped_point.x = this.position.x;
-            this.jumped_point.y = this.position.y;
         }
     },
 
@@ -412,27 +414,27 @@ Player.prototype = {
         var v = this.view.toScreenPosition(this.position);
         if (this.state == PLAYERSTATE.DEAD){					// 死亡
             var anime = (~~(this.timer / 6) % 4);
-            //if(playerdata.lunker_mode){
-            //    Hell_draw("ino" , cast(int)v.x , cast(int)v.y , CHAR_SIZE * (2 + anime) , 128 + CHAR_SIZE * 2 , CHAR_SIZE,CHAR_SIZE);
-            //}else{
-                game.draw("ino" , v.x , v.y , CHAR_SIZE * (2 + anime) , 128 , CHAR_SIZE, CHAR_SIZE);
-            //}
+            if(this.playerData.lunker_mode){
+                game.draw("ino", v.x , v.y , CHAR_SIZE * (2 + anime) , 128 + CHAR_SIZE * 2 , CHAR_SIZE,CHAR_SIZE);
+            }else{
+                game.draw("ino", v.x , v.y , CHAR_SIZE * (2 + anime) , 128 , CHAR_SIZE, CHAR_SIZE);
+            }
         } else {								// 生存
             if(this.state != PLAYERSTATE.MUTEKI || this.timer % 10 < 5){
                 var anime = (~~(this.timer / 6) % 2);
                 if(!this.onWall()) anime = 0;
                 if(this.direction < 0){
-                    //if(playerdata.lunker_mode){
-                    //    Hell_draw("ino" , cast(int)v.x , cast(int)v.y , CHAR_SIZE * anime , 128 + CHAR_SIZE * 2 , CHAR_SIZE,CHAR_SIZE);
-                    //}else{
+                    if(this.playerData.lunker_mode){
+                        game.draw("ino" , v.x , v.y , CHAR_SIZE * anime , 128 + CHAR_SIZE * 2 , CHAR_SIZE,CHAR_SIZE);
+                    }else{
                         game.draw("ino" , v.x , v.y , CHAR_SIZE * anime , 128 , CHAR_SIZE,CHAR_SIZE);
-                    //}
+                    }
                 }else{
-                    //if(playerdata.lunker_mode){
-                    //    Hell_draw("ino" , cast(int)v.x , cast(int)v.y , CHAR_SIZE * anime , 128 + CHAR_SIZE * 3 , CHAR_SIZE,CHAR_SIZE);
-                    //}else{
+                    if(this.playerData.lunker_mode){
+                        game.draw("ino" , v.x , v.y , CHAR_SIZE * anime , 128 + CHAR_SIZE * 3 , CHAR_SIZE,CHAR_SIZE);
+                    }else{
                         game.draw("ino" , v.x , v.y , CHAR_SIZE * anime , 128 + CHAR_SIZE , CHAR_SIZE,CHAR_SIZE);
-                    //}
+                    }
                 }
             }
         }

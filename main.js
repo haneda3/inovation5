@@ -20,7 +20,7 @@ TitleMain.prototype.update = function () {
         this.offset_y = (Math.random() * 3000 / 11) % 5 - 3;
     }
 
-    if(this.game.key.isEnter() && this.timer > 5){
+    if(this.game.key.isPressEnter() && this.timer > 5){
         this.setMsg(GAMESTATE.MSG_REQ_OPENING);
 
 //        if(islunker){
@@ -55,7 +55,7 @@ OpeningMain.prototype.SCROLL_SPEED = 3;
 OpeningMain.prototype.update = function () {
     this.timer ++;
 
-    if( this.game.key.isEnter() ) this.timer+=20;
+    if( this.game.key.isPressEnter() ) this.timer+=20;
     if( this.timer / this.SCROLL_SPEED > this.SCROLL_LEN + g_height){
         this.setMsg(GAMESTATE.MSG_REQ_GAME);
         //Hell_stopBgm(0);
@@ -77,9 +77,11 @@ GameMain.prototype = new GameState;
 GameMain.prototype.update = function () {
     this.game.field.move();
     this.game.player.move();
+    this.game.key.update();
 }
 
 GameMain.prototype.draw = function () {
+    this.game.fillRect(0,0,g_width,g_height,255,255,255);
     this.game.field.draw(this.game, this.game.player.view.getPosition());
     this.game.player.draw(this.game);
 }
@@ -98,18 +100,19 @@ Game.prototype = {
     initialize: function() {
         this.px = 100;
 
-        var f = new Field();
+        this.playerData = new PlayerData(GAMEMODE.NORMAL);
+
+        var f = new Field(this.playerData);
         f.loadFieldData(field_data);
         this.field = f;
-        this.playerData = new PlayerData();
         this.player = new Player(this, f, this.playerData);
     },
     run: function() {
         this.update();
-        if (this.key.isRight()) {
+        if (this.key.isPressRight()) {
             this.px ++;
         }
-        if (this.key.isLeft()) {
+        if (this.key.isPressLeft()) {
             this.px --;
         }
     },
@@ -160,6 +163,7 @@ function init() {
     var game = new Game();
     game.fps = 50;
     game.context = canvas.getContext('2d');
+//    alert('cx');
 
     var key = new Key();
     game.key = key;

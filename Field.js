@@ -47,7 +47,9 @@ Field.prototype = {
     GRAPHIC_OFFSET_X: -16 - 16*2,
     GRAPHIC_OFFSET_Y:  8 - 16*2,
     SCROLLPANEL_SPEED: 2.0,
-    initialize: function() {
+    PlayerData: null,
+    initialize: function(playerData) {
+        this.playerData = playerData;
         this.field = new Array(this.FIELD_X_MAX * this.FIELD_Y_MAX);
         this.timer = 0;
     },
@@ -66,7 +68,7 @@ Field.prototype = {
         }
     },
     move: function() {
-//        this.timer ++;
+        this.timer ++;
     },
     getStartPoint: function() {
         var v = {x:0, y:0};
@@ -114,16 +116,13 @@ Field.prototype = {
         return true;
     },
     isHiddenSecret: function() {
-//        if(playerdata.getItemCount() < 15) return true;
+        if(this.playerData.getItemCount() < 15) return true;
         return false;
     },
     eraseField: function(x,y) {
         this.field[y * this.FIELD_X_MAX + x] = FIELD.NONE;
     },
     draw: function(game, viewPosition) {
-        game.fillRect(0,0,g_width,g_height,255,255,255);
-//        Vec2D v = gamemain.view.getPosition();
-//        var v = {x: 100, y: 100};
         var v = {x: viewPosition.x, y: viewPosition.y};
         var ofs_x = CHAR_SIZE - (v.x) % CHAR_SIZE;
         var ofs_y = CHAR_SIZE - (v.y) % CHAR_SIZE;
@@ -134,7 +133,7 @@ Field.prototype = {
                 var fy = yy + ~~(v.y / CHAR_SIZE);
                 if( fy < 0 || fy >= this.FIELD_Y_MAX) continue;
 
-                var gy = (this.timer / 10) % 4;
+                var gy = ~~(this.timer / 10) % 4;
                 var gx = this.field[fy * this.FIELD_X_MAX + fx];
 
                 if(this.isItem(fx,fy)){

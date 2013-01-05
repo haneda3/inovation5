@@ -22,88 +22,78 @@ function Key() {
 
 Key.prototype = {
     keyFlags: 0x00,
+    keyFlagsPrev: 0x00,
     initialize: function() {
         var self = this;
         window.addEventListener('keydown',function(evt) {self.keydown(evt); },true);
         window.addEventListener('keyup',function(evt) {self.keyup(evt); },true);
     },
     keydown: function(event) {
-        var code = event.keyCode;
-
-        switch (code) {
-            case KEY_CODE.LEFT:
-                this.keyFlags |= INPUT_BIT.LEFT;
-                event.preventDefault();
-                break;
-            case KEY_CODE.RIGHT:
-                this.keyFlags |= INPUT_BIT.RIGHT;
-                event.preventDefault();
-                break;
-            case KEY_CODE.UP:
-                this.keyFlags |= INPUT_BIT.UP;
-                event.preventDefault();
-                break;
-            case KEY_CODE.DOWN:
-                this.keyFlags |= INPUT_BIT.DOWN;
-                event.preventDefault();
-                break;
-            case KEY_CODE.ENTER:
-                this.keyFlags |= INPUT_BIT.ENTER;
-                event.preventDefault();
-                break;
-            case KEY_CODE.SPACE:
-                this.keyFlags |= INPUT_BIT.SPACE;
-                event.preventDefault();
-                break;
+        var keyCode = event.keyCode;
+        var bit = this.getKeyBit(keyCode);
+        if (bit == null) {
+            return;
         }
+        this.keyFlags |= bit;
+        event.preventDefault();
     },
 
     keyup: function(event) {
-        switch (event.keyCode) {
-            case KEY_CODE.LEFT:
-                this.keyFlags &= ~INPUT_BIT.LEFT;
-                event.preventDefault();
-                break;
-            case KEY_CODE.RIGHT:
-                this.keyFlags &= ~INPUT_BIT.RIGHT;
-                event.preventDefault();
-                break;
-            case KEY_CODE.UP:
-                this.keyFlags &= ~INPUT_BIT.UP;
-                event.preventDefault();
-                break;
-            case KEY_CODE.DOWN:
-                this.keyFlags &= ~INPUT_BIT.DOWN;
-                event.preventDefault();
-                break;
-            case KEY_CODE.ENTER:
-                this.keyFlags &= ~INPUT_BIT.ENTER;
-                event.preventDefault();
-                break;
-            case KEY_CODE.SPACE:
-                this.keyFlags &= ~INPUT_BIT.SPACE;
-                event.preventDefault();
-                break;
+        var keyCode = event.keyCode;
+        var bit = this.getKeyBit(keyCode);
+        if (bit == null) {
+            return;
         }
+        this.keyFlags &= ~bit;
+        event.preventDefault();
     },
 
-    isLeft: function() {
-        return (this.keyFlags & INPUT_BIT.LEFT);
+    isPressLeft: function() {
+        return this.isPressKey(KEY_CODE.LEFT);
     },
-    isRight: function() {
-        return (this.keyFlags & INPUT_BIT.RIGHT);
+    isPressRight: function() {
+        return this.isPressKey(KEY_CODE.RIGHT);
     },
-    isUp: function() {
-        return (this.keyFlags & INPUT_BIT.UP);
+    isPressUp: function() {
+        return this.isPressKey(KEY_CODE.UP);
     },
-    isDown: function() {
-        return (this.keyFlags & INPUT_BIT.DOWN);
+    isPressDown: function() {
+        return this.isPressKey(KEY_CODE.DOWN);
     },
-    isEnter: function() {
-        return (this.keyFlags & INPUT_BIT.ENTER);
+    isPressEnter: function() {
+        return this.isPressKey(KEY_CODE.ENTER);
     },
-    isSpace: function() {
-        return (this.keyFlags & INPUT_BIT.SPACE);
+    isPressSpace: function() {
+        return this.isPressKey(KEY_CODE.SPACE);
+    },
+    isPushSpace: function() {
+        return this.isPushKey(KEY_CODE.SPACE);
+    },
+    getKeyBit: function(keyCode) {
+        switch (keyCode) {
+            case KEY_CODE.ENTER:    return INPUT_BIT.ENTER;
+            case KEY_CODE.SPACE:    return INPUT_BIT.SPACE;
+            case KEY_CODE.LEFT:    return INPUT_BIT.LEFT;
+            case KEY_CODE.RIGHT:    return INPUT_BIT.RIGHT;
+            case KEY_CODE.UP:    return INPUT_BIT.UP;
+            case KEY_CODE.DOWN:    return INPUT_BIT.DOWN;
+            default:    return null;
+        }
+    },
+    isPressKey: function(keyCode) {
+        return (this.keyFlags & this.getKeyBit(keyCode));
+    },
+    isPressPrevKey: function(keyCode) {
+        return (this.keyFlagsPrev & this.getKeyBit(keyCode));
+    },
+    isPushKey: function(keyCode) {
+        if (this.isPressKey(keyCode) && (this.isPressPrevKey(keyCode) == false)) {
+            return true;
+        }
+        return false;
+    },
+    update: function() {
+        this.keyFlagsPrev = this.keyFlags;
     }
 }
 
