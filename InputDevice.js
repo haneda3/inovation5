@@ -3,8 +3,8 @@ KEY_CODE = {
     UP: 38,
     RIGHT: 39,
     DOWN: 40,
-    ENTER: 13,
-    SPACE: 32
+    ENTER: 32,
+    SPACE: 13
 };
 
 INPUT_BIT = {

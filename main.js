@@ -4,7 +4,8 @@ var g_height = 240;
 var CHAR_SIZE = 16;
 
 function TitleMain(game) {
-    this.initialize.apply(this, arguments);
+//    this.initialize.apply(this, arguments);
+    GameState.call(this, game);
 }
 
 TitleMain.prototype = new GameState;
@@ -75,7 +76,10 @@ TitleMain.prototype.draw = function() {
 }
 
 function OpeningMain(game) {
-    this.initialize.apply(this, arguments);
+//    this.initialize.apply(this, arguments);
+    GameState.call(this, game);
+
+    this.game.audio.play("bgm1");
 }
 
 OpeningMain.prototype = new GameState;
@@ -89,7 +93,7 @@ OpeningMain.prototype.update = function () {
     if( this.game.key.isPressSpace() ) this.timer+=20;
     if( this.timer / this.SCROLL_SPEED > this.SCROLL_LEN + g_height){
         this.setMsg(GAMESTATE.MSG_REQ_GAME);
-        //Hell_stopBgm(0);
+        this.game.audio.stop("bgm1");
     }
 }
 
@@ -100,7 +104,13 @@ OpeningMain.prototype.draw = function () {
 }
 
 function GameMain(game) {
-    this.initialize.apply(this, arguments);
+//    this.initialize.apply(this, arguments);
+    GameState.call(this, game);
+
+    var f = new Field(this.game.playerData);
+    f.loadFieldData(field_data);
+    this.game.field = f;
+    this.game.player.initialize();
 }
 
 GameMain.prototype = new GameState;
@@ -130,14 +140,13 @@ Game.prototype = {
     initialize: function() {
         this.playerData = new PlayerData(GAMEMODE.NORMAL);
 
-        var f = new Field(this.playerData);
-        f.loadFieldData(field_data);
-        this.field = f;
-        this.player = new Player(this, f, this.playerData);
     },
     start: function() {
         var self = this;
         this.self = self;
+
+        this.player = new Player(this);
+
         this._intervalId = setInterval(function() {self.loop();}, 1000 / self.fps);
     },
     loop: function() {
@@ -175,12 +184,22 @@ function init() {
         return false;
     }
 
+    var myAudio = new MyAudio();
+    myAudio.load("bgm0", "resource/sound/ino1.ogg");
+    myAudio.load("bgm1", "resource/sound/ino2.ogg");
+    myAudio.load("heal", "resource/sound/heal.wav");
+    myAudio.load("itemget", "resource/sound/itemget.wav");
+    myAudio.load("itemget2", "resource/sound/itemget2.wav");
+    myAudio.load("damage", "resource/sound/damage.wav");
+    myAudio.load("jump", "resource/sound/jump.wav");
+
     var game = new Game();
     game.fps = 50;
     game.context = canvas.getContext('2d');
 //    alert('cx');
 
     game.key = new InputDevice();
+    game.audio = myAudio;
 
     game.img = {};
     var img = new Image();

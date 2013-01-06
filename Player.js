@@ -29,8 +29,8 @@ View.prototype = {
     }
 }
 
-function Player() {
-    this.initialize.apply(this, arguments);
+function Player(game) {
+    this.game = game;
 }
 
 var PLAYER_SPEED = 2.0;
@@ -63,9 +63,8 @@ Player.prototype = {
     game: null,
     view: null,
     playerData: null,
-    initialize: function(game, field, playerData) {
-        this.game = game;
-
+    initialize: function() {
+        this.state = PLAYERSTATE.NORMAL;
         this.timer = 0;
         this.wait_timer = 0;
 
@@ -73,19 +72,17 @@ Player.prototype = {
         this.speed = {x: 0.0, y: 0.0};
         this.direction = 0;
 
-        this.playerData = playerData;
-        this.life = playerData.life_max * LIFE_RATIO;
-        var startPoint = field.getStartPoint();
+        this.playerData = this.game.playerData;
+        this.life = this.playerData.life_max * LIFE_RATIO;
+        var startPoint = this.game.field.getStartPoint();
         this.position = startPoint;
         this.jumped_point = {x: startPoint.x, y:startPoint.y};
 
-        this.field = field;
+        this.field = this.game.field;
         this.view = new View();
         this.view.setPosition(this.position);
-
-//        Hell_playBgm("./resource/sound/ino1.ogg");
+        this.game.audio.play("bgm0");
     },
-
     onWall: function(){			// 壁に乗っているか
         if(this.toFieldOfsY() > CHAR_SIZE / 4) return false;
         if(this.field.isRidable(this.toFieldX()	,this.toFieldY() + 1 ) && this.toFieldOfsX() < CHAR_SIZE * 7 / 8)	return true;
@@ -161,8 +158,8 @@ Player.prototype = {
                 if(this.life < this.playerData.life_max * LIFE_RATIO){
                     var o_life = this.life;
                     this.life++;
-                    if (this.life / LIFE_RATIO != o_life / LIFE_RATIO) {
-                        //Hell_playWAV("heal");
+                    if (~~(this.life / LIFE_RATIO) != ~~(o_life / LIFE_RATIO)) {
+                        this.game.audio.play("heal");
                     }
                 }
                 break;
@@ -188,6 +185,7 @@ Player.prototype = {
             case PLAYERSTATE.DEAD:			// 死亡
                 this.moveNormal();
 
+                this.game.audio.stop("bgm0");
                 //Hell_stopBgm(0);
                 if(this.game.key.isPressSpace() && this.wait_timer > 15) {
                     this.game.gameState.setMsg(GAMESTATE.MSG_REQ_TITLE);
@@ -226,13 +224,13 @@ Player.prototype = {
                     this.state = PLAYERSTATE.MUTEKI;
                     this.wait_timer = 0;
                     this.life -= LIFE_RATIO;
-                    //this.Hell_playWAV("damage");
+                    this.game.audio.play("damage");
                 }
                 if(this.position.y - this.jumped_point.y > LUNKER_JUMP_DAMAGE2){
                     this.state = PLAYERSTATE.MUTEKI;
                     this.wait_timer = 0;
                     this.life -= LIFE_RATIO * 99;
-                    //Hell_playWAV("damage");
+                    this.game.audio.play("damage");
                 }
             }
 
@@ -328,7 +326,7 @@ Player.prototype = {
                     if(this.speed.x > 0) this.speed.x += 0.02;
                 }
 
-                //Hell_playWAV("jump");
+                this.game.audio.play("jump");
 
                 this.jumped_point.x = this.position.x;
                 this.jumped_point.y = this.position.y;
@@ -365,13 +363,13 @@ Player.prototype = {
                     this.field.eraseField(this.toFieldX() + xx, this.toFieldY() + yy);
                     this.wait_timer = 0;
 
-                    /*
-                    Hell_stopBgm(0);
-                    if(this.playerdata.isItemForClear(item_get) || item_get == Field.FIELD_ITEM_POWERUP){
-                        Hell_playWAV("itemget");
+
+                    //Hell_stopBgm(0);
+                    if(this.playerData.isItemForClear(this.item_get) || this.item_get == Field.FIELD_ITEM_POWERUP){
+                        this.game.audio.play("itemget");
                     }else{
-                        Hell_playWAV("itemget2");
-                    }*/
+                        this.game.audio.play("itemget2");
+                    }
                     return;
                 }
                 // トゲ(ダメージ)
@@ -382,7 +380,7 @@ Player.prototype = {
                     this.speed.y = PLAYER_JUMP;
                     this.jump_cnt = -1;			// ダメージ・エキストラジャンプ
 
-                    //Hell_playWAV("damage");
+                    this.game.audio.play("damage");
 
                     return;
                 }

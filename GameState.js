@@ -9,17 +9,14 @@ GAMESTATE = {
 };
 
 function GameState(game) {
-    this.initialize.apply(this, arguments);
+//    var self = this;
+    this.game = game;
+    this.msg = GAMESTATE.MSG_NONE;
 }
 
 GameState.prototype = {
     msg: 0,
     game: null,
-    initialize: function(game) {
-        var self = this;
-        this.game = game;
-        msg = GAMESTATE.MSG_NONE;
-    },
     getMsg: function() {
         return this.msg;
     },
