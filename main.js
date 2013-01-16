@@ -79,7 +79,7 @@ function OpeningMain(game) {
 //    this.initialize.apply(this, arguments);
     GameState.call(this, game);
 
-    this.game.audio.play("bgm1");
+    this.game.bgm.play("bgm1");
 }
 
 OpeningMain.prototype = new GameState;
@@ -93,7 +93,7 @@ OpeningMain.prototype.update = function () {
     if( this.game.key.isPressAction() ) this.timer+=20;
     if( this.timer / this.SCROLL_SPEED > this.SCROLL_LEN + g_height){
         this.setMsg(GAMESTATE.MSG_REQ_GAME);
-        this.game.audio.stop("bgm1");
+        this.game.bgm.stop();
     }
 }
 
@@ -184,14 +184,16 @@ function init() {
         return false;
     }
 
-    var myAudio = new MyAudio();
-    myAudio.load("bgm0", "resource/sound/ino1.ogg");
-    myAudio.load("bgm1", "resource/sound/ino2.ogg");
-    myAudio.load("heal", "resource/sound/heal.wav");
-    myAudio.load("itemget", "resource/sound/itemget.wav");
-    myAudio.load("itemget2", "resource/sound/itemget2.wav");
-    myAudio.load("damage", "resource/sound/damage.wav");
-    myAudio.load("jump", "resource/sound/jump.wav");
+    var se = new SoundEffect();
+    se.load("heal", "resource/sound/heal.wav");
+    se.load("itemget", "resource/sound/itemget.wav");
+    se.load("itemget2", "resource/sound/itemget2.wav");
+    se.load("damage", "resource/sound/damage.wav");
+    se.load("jump", "resource/sound/jump.wav");
+
+    var bgm = new BGM();
+    bgm.load("bgm0", "resource/sound/ino1.ogg");
+    bgm.load("bgm1", "resource/sound/ino2.ogg");
 
     var game = new Game();
     game.fps = 50;
@@ -199,7 +201,8 @@ function init() {
 //    alert('cx');
 
     game.key = new InputDevice();
-    game.audio = myAudio;
+    game.se = se;
+    game.bgm = bgm;
 
     game.img = {};
     var img = new Image();
