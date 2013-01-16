@@ -24,7 +24,7 @@ TitleMain.prototype.update = function () {
     }
 
     var key = this.game.key;
-    if(key.isPushSpace() && this.timer > 5){
+    if(key.isPushAction() && this.timer > 5){
         this.setMsg(GAMESTATE.MSG_REQ_OPENING);
 
         if (this.lunker_mode) {
@@ -90,7 +90,7 @@ OpeningMain.prototype.SCROLL_SPEED = 3;
 OpeningMain.prototype.update = function () {
     this.timer ++;
 
-    if( this.game.key.isPressSpace() ) this.timer+=20;
+    if( this.game.key.isPressAction() ) this.timer+=20;
     if( this.timer / this.SCROLL_SPEED > this.SCROLL_LEN + g_height){
         this.setMsg(GAMESTATE.MSG_REQ_GAME);
         this.game.audio.stop("bgm1");

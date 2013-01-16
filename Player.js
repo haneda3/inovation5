@@ -187,7 +187,7 @@ Player.prototype = {
 
                 this.game.audio.stop("bgm0");
                 //Hell_stopBgm(0);
-                if(this.game.key.isPressSpace() && this.wait_timer > 15) {
+                if(this.game.key.isPressAction() && this.wait_timer > 15) {
                     this.game.gameState.setMsg(GAMESTATE.MSG_REQ_TITLE);
                 }
                 break;
@@ -234,7 +234,7 @@ Player.prototype = {
                 }
             }
 
-            if(this.game.key.isPressSpace() && this.game.key.isPressDown() && this.isFallable()){
+            if(this.game.key.isPressAction() && this.game.key.isPressDown() && this.isFallable()){
                 // 落下
             }else{
                 if(this.speed.y > 0) this.speed.y = 0;
@@ -306,7 +306,7 @@ Player.prototype = {
             return;
         }
 
-        if(this.game.key.isPressSpace()){
+        if(this.game.key.isPressAction()){
             this.state = PLAYERSTATE.NORMAL;
 
             //Hell_playBgm("./resource/sound/ino1.ogg");
@@ -316,7 +316,7 @@ Player.prototype = {
         if(this.game.key.isPressLeft()) this.direction = -1;
         if(this.game.key.isPressRight()) this.direction = 1;
 
-        if(this.game.key.isPushSpace()) {
+        if(this.game.key.isPushAction()) {
             if (((this.playerData.jump_max > this.jump_cnt) || this.onWall()) && (this.game.key.isPressDown() == false)){
                 this.speed.y = PLAYER_JUMP;		// ジャンプ
                 if(!this.onWall()) this.jump_cnt++;
