@@ -473,7 +473,7 @@ Player.prototype = {
 
             var it = this.item_get - (FIELD.ITEM_BORDER + 1);
             game.draw("ino" , (g_width - 16) / 2 , (g_height - 96) / 2 - t * t - 16 ,
-                (it % 16) * CHAR_SIZE, (it / 16 + 4) * CHAR_SIZE , CHAR_SIZE , CHAR_SIZE);
+                (it % 16) * CHAR_SIZE, (~~(it / 16) + 4) * CHAR_SIZE , CHAR_SIZE , CHAR_SIZE);
         }
 
         // ゲーム開始メッセージ
