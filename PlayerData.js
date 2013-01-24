@@ -14,18 +14,18 @@ PlayerData.prototype = {
     life_max: 0,
     lunker_mode: false,
     clearFlagItems: [FIELD.ITEM_FUJI, FIELD.ITEM_TAKA, FIELD.ITEM_NASU],
-    initialize: function(gameMode) {
+//    clearFlagItems: [22], // for debug
+    initialize: function (gameMode) {
         this.itemGetFlags = {};
-        for (var t=0;t<FIELD.ITEM_MAX;t++) {
+        for (var t = 0; t < FIELD.ITEM_MAX; t++) {
             this.itemGetFlags[t] = false;
         }
         this.playtime = 0;
         this.jump_max = 0;
 
-        switch(gameMode){
+        switch (gameMode) {
             case GAMEMODE.NORMAL:
                 // ノーマルモード
-//                this.jump_max = 1;
                 this.life_max = 3;
                 this.lunker_mode = false;
                 break;
@@ -41,8 +41,8 @@ PlayerData.prototype = {
                 break;
         }
     },
-    isGameClear: function() {
-        for (var i = 0 ; i < this.clearFlagItems.length ; i ++) {
+    isGameClear: function () {
+        for (var i = 0; i < this.clearFlagItems.length; i++) {
             var e = this.clearFlagItems[i];
             if (this.itemGetFlags[e] == false) {
                 return false;
@@ -50,18 +50,24 @@ PlayerData.prototype = {
         }
         return true;
     },
-    isItemForClear: function(it) {
-        for (var i = 0 ; i < this.clearFlagItems.length ; i ++) {
+    isItemForClear: function (it) {
+        for (var i = 0; i < this.clearFlagItems.length; i++) {
             var e = this.clearFlagItems[i];
             if (e == it) return true;
         }
         return false;
     },
-    getItemCount: function() {
+    isGetOmega: function() {
+        if (this.itemGetFlags[FIELD.ITEM_OMEGA] == true) {
+            return true;
+        }
+        return false;
+    },
+    getItemCount: function () {
         var f = 0;
-        for (var i = 0 ; i < this.itemGetFlags.length ; i ++) {
+        for (var i = 0; i < this.itemGetFlags.length; i++) {
             if (this.itemGetFlags[i]) {
-                f ++;
+                f++;
             }
         }
         return f;

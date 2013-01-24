@@ -168,8 +168,10 @@ Player.prototype = {
                 this.moveItemGet();
 
                 // クリアチェック
-                if(this.playerData.isGameClear() && this.state != PLAYERSTATE.ITEMGET) {
-                    this.game.gameState.setMsg(GAMESTATE.MSG_REQ_ENDING);
+                if (this.state != PLAYERSTATE.ITEMGET) {
+                    if (this.playerData.isGameClear()) {
+                        this.game.gameState.setMsg(GAMESTATE.MSG_REQ_ENDING);
+                    }
                 }
 
                 break;
