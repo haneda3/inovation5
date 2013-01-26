@@ -81,7 +81,7 @@ Player.prototype = {
         this.field = this.game.field;
         this.view = new View();
         this.view.setPosition(this.position);
-        this.game.audio.play("bgm0");
+        this.game.bgm.play("bgm0");
     },
     onWall: function(){			// 壁に乗っているか
         if(this.toFieldOfsY() > CHAR_SIZE / 4) return false;
@@ -159,7 +159,7 @@ Player.prototype = {
                     var o_life = this.life;
                     this.life++;
                     if (~~(this.life / LIFE_RATIO) != ~~(o_life / LIFE_RATIO)) {
-                        this.game.audio.play("heal");
+                        this.game.se.play("heal");
                     }
                 }
                 break;
@@ -168,8 +168,10 @@ Player.prototype = {
                 this.moveItemGet();
 
                 // クリアチェック
-                if(this.playerData.isGameClear() && this.state != PLAYERSTATE.ITEMGET) {
-                    this.game.gameState.setMsg(GAMESTATE.MSG_REQ_ENDING);
+                if (this.state != PLAYERSTATE.ITEMGET) {
+                    if (this.playerData.isGameClear()) {
+                        this.game.gameState.setMsg(GAMESTATE.MSG_REQ_ENDING);
+                    }
                 }
 
                 break;
@@ -185,9 +187,8 @@ Player.prototype = {
             case PLAYERSTATE.DEAD:			// 死亡
                 this.moveNormal();
 
-                this.game.audio.stop("bgm0");
-                //Hell_stopBgm(0);
-                if(this.game.key.isPressSpace() && this.wait_timer > 15) {
+                this.game.bgm.stop();
+                if(this.game.key.isPressAction() && this.wait_timer > 15) {
                     this.game.gameState.setMsg(GAMESTATE.MSG_REQ_TITLE);
                 }
                 break;
@@ -224,17 +225,17 @@ Player.prototype = {
                     this.state = PLAYERSTATE.MUTEKI;
                     this.wait_timer = 0;
                     this.life -= LIFE_RATIO;
-                    this.game.audio.play("damage");
+                    this.game.se.play("damage");
                 }
                 if(this.position.y - this.jumped_point.y > LUNKER_JUMP_DAMAGE2){
                     this.state = PLAYERSTATE.MUTEKI;
                     this.wait_timer = 0;
                     this.life -= LIFE_RATIO * 99;
-                    this.game.audio.play("damage");
+                    this.game.se.play("damage");
                 }
             }
 
-            if(this.game.key.isPressSpace() && this.game.key.isPressDown() && this.isFallable()){
+            if(this.game.key.isPressAction() && this.game.key.isPressDown() && this.isFallable()){
                 // 落下
             }else{
                 if(this.speed.y > 0) this.speed.y = 0;
@@ -306,17 +307,17 @@ Player.prototype = {
             return;
         }
 
-        if(this.game.key.isPressSpace()){
+        if(this.game.key.isPressAction()){
             this.state = PLAYERSTATE.NORMAL;
 
-            //Hell_playBgm("./resource/sound/ino1.ogg");
+            this.game.bgm.play("bgm0");
         }
     },
     moveByInput: function() {
         if(this.game.key.isPressLeft()) this.direction = -1;
         if(this.game.key.isPressRight()) this.direction = 1;
 
-        if(this.game.key.isPushSpace()) {
+        if(this.game.key.isPushAction()) {
             if (((this.playerData.jump_max > this.jump_cnt) || this.onWall()) && (this.game.key.isPressDown() == false)){
                 this.speed.y = PLAYER_JUMP;		// ジャンプ
                 if(!this.onWall()) this.jump_cnt++;
@@ -326,7 +327,7 @@ Player.prototype = {
                     if(this.speed.x > 0) this.speed.x += 0.02;
                 }
 
-                this.game.audio.play("jump");
+                this.game.se.play("jump");
 
                 this.jumped_point.x = this.position.x;
                 this.jumped_point.y = this.position.y;
@@ -363,12 +364,11 @@ Player.prototype = {
                     this.field.eraseField(this.toFieldX() + xx, this.toFieldY() + yy);
                     this.wait_timer = 0;
 
-
-                    //Hell_stopBgm(0);
+                    this.game.bgm.stop();
                     if(this.playerData.isItemForClear(this.item_get) || this.item_get == Field.FIELD_ITEM_POWERUP){
-                        this.game.audio.play("itemget");
+                        this.game.se.play("itemget");
                     }else{
-                        this.game.audio.play("itemget2");
+                        this.game.se.play("itemget2");
                     }
                     return;
                 }
@@ -380,7 +380,7 @@ Player.prototype = {
                     this.speed.y = PLAYER_JUMP;
                     this.jump_cnt = -1;			// ダメージ・エキストラジャンプ
 
-                    this.game.audio.play("damage");
+                    this.game.se.play("damage");
 
                     return;
                 }
@@ -473,7 +473,7 @@ Player.prototype = {
 
             var it = this.item_get - (FIELD.ITEM_BORDER + 1);
             game.draw("ino" , (g_width - 16) / 2 , (g_height - 96) / 2 - t * t - 16 ,
-                (it % 16) * CHAR_SIZE, (it / 16 + 4) * CHAR_SIZE , CHAR_SIZE , CHAR_SIZE);
+                (it % 16) * CHAR_SIZE, (~~(it / 16) + 4) * CHAR_SIZE , CHAR_SIZE , CHAR_SIZE);
         }
 
         // ゲーム開始メッセージ

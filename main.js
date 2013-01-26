@@ -1,4 +1,3 @@
-
 var g_width = 320;
 var g_height = 240;
 var CHAR_SIZE = 16;
@@ -17,32 +16,32 @@ TitleMain.prototype.lunker_mode = GAMEMODE.NORMAL;
 TitleMain.prototype.lunker_command = 0;
 
 TitleMain.prototype.update = function () {
-    this.timer ++;
-    if(this.timer % 5 == 0){
+    this.timer++;
+    if (this.timer % 5 == 0) {
         this.offset_x = (Math.random() * 3000 / 11) % 5 - 3;
         this.offset_y = (Math.random() * 3000 / 11) % 5 - 3;
     }
 
     var key = this.game.key;
-    if(key.isPushSpace() && this.timer > 5){
+    if (key.isPushAction() && this.timer > 5) {
         this.setMsg(GAMESTATE.MSG_REQ_OPENING);
 
         if (this.lunker_mode) {
             this.game.playerData.initialize(GAMEMODE.LUNKER);
-        }else{
+        } else {
             this.game.playerData.initialize(GAMEMODE.NORMAL);
         }
     }
 
     // ランカー・モード・コマンド
-    switch(~~this.lunker_command){
+    switch (~~this.lunker_command) {
         case 0:
         case 1:
         case 2:
         case 6:
-            if(key.isPushLeft()){
+            if (key.isPushLeft()) {
                 this.lunker_command++;
-            }else if(key.isPushRight() || key.isPushUp() || key.isPushDown()){
+            } else if (key.isPushRight() || key.isPushUp() || key.isPushDown()) {
                 this.lunker_command = 0;
             }
             break;
@@ -50,36 +49,36 @@ TitleMain.prototype.update = function () {
         case 4:
         case 5:
         case 7:
-            if(key.isPushRight()){
+            if (key.isPushRight()) {
                 this.lunker_command++;
-            }else if(key.isPushLeft() || key.isPushUp() || key.isPushDown()){
+            } else if (key.isPushLeft() || key.isPushUp() || key.isPushDown()) {
                 this.lunker_command = 0;
             }
             break;
         default:
             break;
     }
-    if(this.lunker_command > 7){
+    if (this.lunker_command > 7) {
         this.lunker_command = 0;
         this.lunker_mode = !this.lunker_mode;
-    }}
+    }
+}
 
-TitleMain.prototype.draw = function() {
-    if(this.lunker_mode) {
-        this.game.fillRect(0,0,g_width,g_height,0,0,0);
-    }else{
-        this.game.fillRect(0,0,g_width,g_height,255,255,255);
+TitleMain.prototype.draw = function () {
+    if (this.lunker_mode) {
+        this.game.fillRect(0, 0, g_width, g_height, 0, 0, 0);
+    } else {
+        this.game.fillRect(0, 0, g_width, g_height, 255, 255, 255);
     }
 
-    this.game.draw("msg", (g_width - 256) / 2 ,  32 + (g_height-240)/2 , 0 , 0 , 256 , 64);
-    this.game.draw("msg", (g_width - 256) / 2 + this.offset_x  , 160 + this.offset_y + (g_height-240)/2 , 0 , 64 , 256 , 32);
+    this.game.draw("msg", (g_width - 256) / 2, 32 + (g_height - 240) / 2, 0, 0, 256, 64);
+    this.game.draw("msg", (g_width - 256) / 2 + this.offset_x, 160 + this.offset_y + (g_height - 240) / 2, 0, 64, 256, 32);
 }
 
 function OpeningMain(game) {
-//    this.initialize.apply(this, arguments);
     GameState.call(this, game);
 
-    this.game.audio.play("bgm1");
+    this.game.bgm.play("bgm1");
 }
 
 OpeningMain.prototype = new GameState;
@@ -88,23 +87,95 @@ OpeningMain.prototype.SCROLL_LEN = 416;
 OpeningMain.prototype.SCROLL_SPEED = 3;
 
 OpeningMain.prototype.update = function () {
-    this.timer ++;
+    this.timer++;
 
-    if( this.game.key.isPressSpace() ) this.timer+=20;
-    if( this.timer / this.SCROLL_SPEED > this.SCROLL_LEN + g_height){
+    if (this.game.key.isPressAction()) this.timer += 20;
+    if (this.timer / this.SCROLL_SPEED > this.SCROLL_LEN + g_height) {
         this.setMsg(GAMESTATE.MSG_REQ_GAME);
-        this.game.audio.stop("bgm1");
+        this.game.bgm.stop();
     }
 }
 
 OpeningMain.prototype.draw = function () {
-    this.game.fillRect(0,0,g_width,g_height,255,255,255);
+    this.game.fillRect(0, 0, g_width, g_height, 255, 255, 255);
 
-    this.game.draw("msg" , (g_width - 256) / 2 , g_height - (this.timer / this.SCROLL_SPEED) ,0 , 160, 256 , this.SCROLL_LEN);
+    this.game.draw("msg", (g_width - 256) / 2, g_height - (this.timer / this.SCROLL_SPEED), 0, 160, 256, this.SCROLL_LEN);
 }
 
+ENDINGMAIN_STATE = {
+    STAFFROLL: 0,
+    RESULT: 1
+}
+
+function EndingMain(game) {
+    GameState.call(this, game);
+
+    this.game.bgm.play("bgm1");
+}
+
+EndingMain.prototype = new GameState;
+EndingMain.prototype.timer = 0;
+EndingMain.prototype.state = ENDINGMAIN_STATE.STAFFROLL;
+EndingMain.prototype.SCROLL_LEN = 1088;
+EndingMain.prototype.SCROLL_SPEED = 3;
+
+EndingMain.prototype.update = function () {
+    this.timer++;
+    switch (this.state) {
+        case ENDINGMAIN_STATE.STAFFROLL:
+            if (this.game.key.isPressAction()) {
+                this.timer += 20;
+            }
+            if (this.timer / this.SCROLL_SPEED > this.SCROLL_LEN + g_height) {
+                this.timer = 0;
+                this.state = ENDINGMAIN_STATE.RESULT;
+
+                this.game.bgm.stopWithFade(5000);
+            }
+            break;
+        case ENDINGMAIN_STATE.RESULT:
+            if (this.game.key.isPushAction() && this.timer > 5) {
+                // 条件を満たしていると隠し画面へ
+                if (this.game.playerData.isGetOmega()) {
+                    if (this.game.playerData.lunker_mode) {
+                        this.setMsg(GAMESTATE.MSG_REQ_SECRET2);
+                    } else {
+                        this.setMsg(GAMESTATE.MSG_REQ_SECRET1);
+                    }
+                } else {
+                    this.setMsg(GAMESTATE.MSG_REQ_TITLE);
+                }
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+EndingMain.prototype.draw = function () {
+    this.game.fillRect(0, 0, g_width, g_height, 255, 255, 255);
+
+    switch (this.state) {
+        case ENDINGMAIN_STATE.STAFFROLL:
+            this.game.draw("msg", (g_width - 256) / 2, g_height - (this.timer / this.SCROLL_SPEED),
+                0, 576, 256, this.SCROLL_LEN);
+            break;
+        case ENDINGMAIN_STATE.RESULT:
+            this.game.draw("msg", (g_width - 256) / 2, (g_height - 160) / 2, 0, 1664, 256, 160);
+
+//                Hell_drawFont(std.string.toString(playerdata.getItemCount()) ,
+//                    (g_width - 10 * 0)/ 2,  (g_height - 160) / 2 + 13 * 5 + 2);
+
+//                Hell_drawFont(std.string.toString(playerdata.playtime) , (g_width - 13)/ 2 ,  (g_height - 160) / 2 + 13 * 8 + 2);
+
+            break;
+        default:
+            break;
+    }
+}
+
+
 function GameMain(game) {
-//    this.initialize.apply(this, arguments);
     GameState.call(this, game);
 
     var f = new Field(this.game.playerData);
@@ -121,7 +192,7 @@ GameMain.prototype.update = function () {
 }
 
 GameMain.prototype.draw = function () {
-    this.game.fillRect(0,0,g_width,g_height,255,255,255);
+    this.game.fillRect(0, 0, g_width, g_height, 255, 255, 255);
     this.game.field.draw(this.game, this.game.player.view.getPosition());
     this.game.player.draw(this.game);
 }
@@ -137,19 +208,21 @@ Game.prototype = {
     player: null,
     playerData: null,
     key: null,
-    initialize: function() {
+    initialize: function () {
         this.playerData = new PlayerData(GAMEMODE.NORMAL);
 
     },
-    start: function() {
+    start: function () {
         var self = this;
         this.self = self;
 
         this.player = new Player(this);
 
-        this._intervalId = setInterval(function() {self.loop();}, 1000 / self.fps);
+        this._intervalId = setInterval(function () {
+            self.loop();
+        }, 1000 / self.fps);
     },
-    loop: function() {
+    loop: function () {
         if (this.gameState == null) {
             this.gameState = new TitleMain(this.self);
         } else {
@@ -163,19 +236,52 @@ Game.prototype = {
                 case GAMESTATE.MSG_REQ_GAME:
                     this.gameState = new GameMain(this);
                     break;
+                case GAMESTATE.MSG_REQ_ENDING:
+                    this.gameState = new EndingMain(this);
+                    break;
+                case GAMESTATE.MSG_REQ_SECRET1:
+                    this.gameState = new SecretMain(this, 1);
+                    break;
+                case GAMESTATE.MSG_REQ_SECRET2:
+                    this.gameState = new SecretMain(this, 2);
+                    break;
             }
         }
         this.gameState.draw();
         this.gameState.update();
         this.key.update();
     },
-    fillRect: function(x, y, w, h, r, g, b) {
+    fillRect: function (x, y, w, h, r, g, b) {
         this.context.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
         this.context.fillRect(x, y, w, h);
     },
-    draw: function(key, px, py, sx, sy, sw, sh) {
+    draw: function (key, px, py, sx, sy, sw, sh) {
         this.context.drawImage(this.img[key], sx, sy, sw, sh, px, py, sw, sh);
-    }
+    },
+    drawFont: function (msg, x, y) {
+        var len = msg.length;
+        for (var n = 0 ; n < len ; n ++) {
+            var c = msg.charAt[n];
+
+            var idx = ~~c;
+            if(idx == 32)
+            {
+                x += 9; // スペース
+                continue;
+            }
+            /*
+            if(idx in g_poolFont)
+            {
+                SDL_Rect dst;
+                dst.x = cast(short)x;
+                dst.y = cast(short)y;
+                SDL_SetAlpha(g_poolFont[idx], SDL_SRCALPHA, cast(ubyte)alpha);
+                SDL_BlitSurface(g_poolFont[idx], cast(SDL_Rect*)0, g_screen, &dst);
+                x += g_poolFont[idx].w;
+            }*/
+        }
+    },
+
 }
 
 function init() {
@@ -184,14 +290,16 @@ function init() {
         return false;
     }
 
-    var myAudio = new MyAudio();
-    myAudio.load("bgm0", "resource/sound/ino1.ogg");
-    myAudio.load("bgm1", "resource/sound/ino2.ogg");
-    myAudio.load("heal", "resource/sound/heal.wav");
-    myAudio.load("itemget", "resource/sound/itemget.wav");
-    myAudio.load("itemget2", "resource/sound/itemget2.wav");
-    myAudio.load("damage", "resource/sound/damage.wav");
-    myAudio.load("jump", "resource/sound/jump.wav");
+    var se = new SoundEffect();
+    se.load("heal", "resource/sound/heal.wav");
+    se.load("itemget", "resource/sound/itemget.wav");
+    se.load("itemget2", "resource/sound/itemget2.wav");
+    se.load("damage", "resource/sound/damage.wav");
+    se.load("jump", "resource/sound/jump.wav");
+
+    var bgm = new BGM();
+    bgm.load("bgm0", "resource/sound/ino1.ogg");
+    bgm.load("bgm1", "resource/sound/ino2.ogg");
 
     var game = new Game();
     game.fps = 50;
@@ -199,18 +307,32 @@ function init() {
 //    alert('cx');
 
     game.key = new InputDevice();
-    game.audio = myAudio;
+    game.se = se;
+    game.bgm = bgm;
 
     game.img = {};
-    var img = new Image();
-    img.src = "resource/image/ino.png";
-    img.onload = function() {
-        game.img['ino'] = img;
-        var ximg = new Image();
-        ximg.src = "resource/image/msg.png";
-        ximg.onload = function() {
-            game.img['msg'] = ximg;
+    
+    async.waterfall([
+        function (callback) {
+            var img = new Image();
+            img.src = "resource/image/ino.png";
+            img.onload = function () {
+                game.img['ino'] = img;
+                callback();
+            }
+        },
+        function (callback) {
+            var img = new Image();
+            img.src = "resource/image/msg.png";
+            img.onload = function () {
+                game.img['msg'] = img;
+                callback();
+            }
+        },
+        function () {
             game.start();
         }
-    }
+    ], function(err, result) {
+
+    });
 }

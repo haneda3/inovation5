@@ -84,6 +84,12 @@ InputDevice.prototype = {
     isPushSpace: function() {
         return this.isPushKey(KEY_CODE.SPACE);
     },
+    isPushAction: function() {
+        return (this.isPushEnter() || this.isPushSpace());
+    },
+    isPressAction: function() {
+        return (this.isPressEnter() || this.isPressSpace());
+    },
     getKeyBit: function(keyCode) {
         switch (keyCode) {
             case KEY_CODE.ENTER:    return INPUT_BIT.ENTER;
