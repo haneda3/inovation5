@@ -311,15 +311,28 @@ function init() {
     game.bgm = bgm;
 
     game.img = {};
-    var img = new Image();
-    img.src = "resource/image/ino.png";
-    img.onload = function () {
-        game.img['ino'] = img;
-        var ximg = new Image();
-        ximg.src = "resource/image/msg.png";
-        ximg.onload = function () {
-            game.img['msg'] = ximg;
+    
+    async.waterfall([
+        function (callback) {
+            var img = new Image();
+            img.src = "resource/image/ino.png";
+            img.onload = function () {
+                game.img['ino'] = img;
+                callback();
+            }
+        },
+        function (callback) {
+            var img = new Image();
+            img.src = "resource/image/msg.png";
+            img.onload = function () {
+                game.img['msg'] = img;
+                callback();
+            }
+        },
+        function () {
             game.start();
         }
-    }
+    ], function(err, result) {
+
+    });
 }
