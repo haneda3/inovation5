@@ -3,7 +3,6 @@ var g_height = 240;
 var CHAR_SIZE = 16;
 
 function TitleMain(game) {
-//    this.initialize.apply(this, arguments);
     GameState.call(this, game);
 }
 
@@ -163,11 +162,8 @@ EndingMain.prototype.draw = function () {
         case ENDINGMAIN_STATE.RESULT:
             this.game.draw("msg", (g_width - 256) / 2, (g_height - 160) / 2, 0, 1664, 256, 160);
 
-//                Hell_drawFont(std.string.toString(playerdata.getItemCount()) ,
-//                    (g_width - 10 * 0)/ 2,  (g_height - 160) / 2 + 13 * 5 + 2);
-
-//                Hell_drawFont(std.string.toString(playerdata.playtime) , (g_width - 13)/ 2 ,  (g_height - 160) / 2 + 13 * 8 + 2);
-
+            this.game.drawFont("" + this.game.playerData.getItemCount(), (g_width - 10 * 0)/ 2,  (g_height - 160) / 2 + 13 * 5 + 2);
+            this.game.drawFont("" + this.game.playerData.playtime, (g_width - 13)/ 2 ,  (g_height - 160) / 2 + 13 * 8 + 2);
             break;
         default:
             break;
@@ -261,7 +257,7 @@ Game.prototype = {
     drawFont: function (msg, x, y) {
         var len = msg.length;
         for (var n = 0 ; n < len ; n ++) {
-            var c = msg.charAt[n];
+            var c = msg.charCodeAt(n);
 
             var idx = ~~c;
             if(idx == 32)
@@ -269,19 +265,16 @@ Game.prototype = {
                 x += 9; // スペース
                 continue;
             }
-            /*
-            if(idx in g_poolFont)
-            {
-                SDL_Rect dst;
-                dst.x = cast(short)x;
-                dst.y = cast(short)y;
-                SDL_SetAlpha(g_poolFont[idx], SDL_SRCALPHA, cast(ubyte)alpha);
-                SDL_BlitSurface(g_poolFont[idx], cast(SDL_Rect*)0, g_screen, &dst);
-                x += g_poolFont[idx].w;
-            }*/
-        }
-    },
+            var img = this.font.fonts[idx];
 
+            if (typeof img != "undefined") {
+                this.context.drawImage(img, x, y);
+                x += this.font.fonts[idx].width;
+            } else {
+                x += 9;
+            }
+        }
+    }
 }
 
 function init() {
@@ -328,6 +321,12 @@ function init() {
                 game.img['msg'] = img;
                 callback();
             }
+        },
+        function (callback) {
+            var font = new Font();
+            font.load("resource/font");
+            game.font = font;
+            callback();
         },
         function () {
             game.start();
