@@ -3,7 +3,6 @@ var g_height = 240;
 var CHAR_SIZE = 16;
 
 function TitleMain(game) {
-//    this.initialize.apply(this, arguments);
     GameState.call(this, game);
 }
 
@@ -163,17 +162,40 @@ EndingMain.prototype.draw = function () {
         case ENDINGMAIN_STATE.RESULT:
             this.game.draw("msg", (g_width - 256) / 2, (g_height - 160) / 2, 0, 1664, 256, 160);
 
-//                Hell_drawFont(std.string.toString(playerdata.getItemCount()) ,
-//                    (g_width - 10 * 0)/ 2,  (g_height - 160) / 2 + 13 * 5 + 2);
-
-//                Hell_drawFont(std.string.toString(playerdata.playtime) , (g_width - 13)/ 2 ,  (g_height - 160) / 2 + 13 * 8 + 2);
-
+            this.game.drawFont("" + this.game.playerData.getItemCount(), (g_width - 10 * 0)/ 2,  (g_height - 160) / 2 + 13 * 5 + 2);
+            this.game.drawFont("" + this.game.playerData.playtime, (g_width - 13)/ 2 ,  (g_height - 160) / 2 + 13 * 8 + 2);
             break;
         default:
             break;
     }
 }
 
+function SecretMain(game, number) {
+    GameState.call(this, game);
+
+    this.game.bgm.play("bgm1");
+    this.number = number;
+}
+
+SecretMain.prototype = new GameState;
+SecretMain.prototype.timer = 0;
+
+SecretMain.prototype.update = function () {
+    this.timer++;
+    if(this.game.key.isPushAction() && this.timer > 5) this.setMsg(GAMESTATE.MSG_REQ_TITLE);
+}
+
+SecretMain.prototype.draw = function () {
+    this.game.fillRect(0,0,g_width,g_height,0,0,0);
+
+    if(this.number == 1){
+        this.game.draw("msg" , (g_width - 256) / 2 , (g_height - 96) / 2 ,
+            0 , 2048 - 96 * 2 , 256 , 96);
+    }else{
+        this.game.draw("msg" , (g_width - 256) / 2 , (g_height - 96) / 2 ,
+            0 , 2048 - 96 , 256 , 96);
+    }
+}
 
 function GameMain(game) {
     GameState.call(this, game);
@@ -261,7 +283,7 @@ Game.prototype = {
     drawFont: function (msg, x, y) {
         var len = msg.length;
         for (var n = 0 ; n < len ; n ++) {
-            var c = msg.charAt[n];
+            var c = msg.charCodeAt(n);
 
             var idx = ~~c;
             if(idx == 32)
@@ -269,19 +291,16 @@ Game.prototype = {
                 x += 9; // スペース
                 continue;
             }
-            /*
-            if(idx in g_poolFont)
-            {
-                SDL_Rect dst;
-                dst.x = cast(short)x;
-                dst.y = cast(short)y;
-                SDL_SetAlpha(g_poolFont[idx], SDL_SRCALPHA, cast(ubyte)alpha);
-                SDL_BlitSurface(g_poolFont[idx], cast(SDL_Rect*)0, g_screen, &dst);
-                x += g_poolFont[idx].w;
-            }*/
-        }
-    },
+            var img = this.font.fonts[idx];
 
+            if (typeof img != "undefined") {
+                this.context.drawImage(img, x, y);
+                x += this.font.fonts[idx].width;
+            } else {
+                x += 9;
+            }
+        }
+    }
 }
 
 function init() {
@@ -328,6 +347,12 @@ function init() {
                 game.img['msg'] = img;
                 callback();
             }
+        },
+        function (callback) {
+            var font = new Font();
+            font.load("resource/font");
+            game.font = font;
+            callback();
         },
         function () {
             game.start();

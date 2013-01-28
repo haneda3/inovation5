@@ -16,7 +16,7 @@ PlayerData.prototype = {
     clearFlagItems: [FIELD.ITEM_FUJI, FIELD.ITEM_TAKA, FIELD.ITEM_NASU],
 //    clearFlagItems: [22], // for debug
     initialize: function (gameMode) {
-        this.itemGetFlags = {};
+        this.itemGetFlags = [];
         for (var t = 0; t < FIELD.ITEM_MAX; t++) {
             this.itemGetFlags[t] = false;
         }
