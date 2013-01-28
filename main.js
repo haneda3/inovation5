@@ -170,6 +170,32 @@ EndingMain.prototype.draw = function () {
     }
 }
 
+function SecretMain(game, number) {
+    GameState.call(this, game);
+
+    this.game.bgm.play("bgm1");
+    this.number = number;
+}
+
+SecretMain.prototype = new GameState;
+SecretMain.prototype.timer = 0;
+
+SecretMain.prototype.update = function () {
+    this.timer++;
+    if(this.game.key.isPushAction() && this.timer > 5) this.setMsg(GAMESTATE.MSG_REQ_TITLE);
+}
+
+SecretMain.prototype.draw = function () {
+    this.game.fillRect(0,0,g_width,g_height,0,0,0);
+
+    if(this.number == 1){
+        this.game.draw("msg" , (g_width - 256) / 2 , (g_height - 96) / 2 ,
+            0 , 2048 - 96 * 2 , 256 , 96);
+    }else{
+        this.game.draw("msg" , (g_width - 256) / 2 , (g_height - 96) / 2 ,
+            0 , 2048 - 96 , 256 , 96);
+    }
+}
 
 function GameMain(game) {
     GameState.call(this, game);
