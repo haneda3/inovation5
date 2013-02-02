@@ -1,10 +1,8 @@
-
 var g_width = 320;
 var g_height = 240;
 var CHAR_SIZE = 16;
 
 function TitleMain(game) {
-//    this.initialize.apply(this, arguments);
     GameState.call(this, game);
 }
 
@@ -17,32 +15,32 @@ TitleMain.prototype.lunker_mode = GAMEMODE.NORMAL;
 TitleMain.prototype.lunker_command = 0;
 
 TitleMain.prototype.update = function () {
-    this.timer ++;
-    if(this.timer % 5 == 0){
+    this.timer++;
+    if (this.timer % 5 == 0) {
         this.offset_x = (Math.random() * 3000 / 11) % 5 - 3;
         this.offset_y = (Math.random() * 3000 / 11) % 5 - 3;
     }
 
     var key = this.game.key;
-    if(key.isPushAction() && this.timer > 5){
+    if (key.isPushAction() && this.timer > 5) {
         this.setMsg(GAMESTATE.MSG_REQ_OPENING);
 
         if (this.lunker_mode) {
             this.game.playerData.initialize(GAMEMODE.LUNKER);
-        }else{
+        } else {
             this.game.playerData.initialize(GAMEMODE.NORMAL);
         }
     }
 
     // ランカー・モード・コマンド
-    switch(~~this.lunker_command){
+    switch (~~this.lunker_command) {
         case 0:
         case 1:
         case 2:
         case 6:
-            if(key.isPushLeft()){
+            if (key.isPushLeft()) {
                 this.lunker_command++;
-            }else if(key.isPushRight() || key.isPushUp() || key.isPushDown()){
+            } else if (key.isPushRight() || key.isPushUp() || key.isPushDown()) {
                 this.lunker_command = 0;
             }
             break;
@@ -50,34 +48,34 @@ TitleMain.prototype.update = function () {
         case 4:
         case 5:
         case 7:
-            if(key.isPushRight()){
+            if (key.isPushRight()) {
                 this.lunker_command++;
-            }else if(key.isPushLeft() || key.isPushUp() || key.isPushDown()){
+            } else if (key.isPushLeft() || key.isPushUp() || key.isPushDown()) {
                 this.lunker_command = 0;
             }
             break;
         default:
             break;
     }
-    if(this.lunker_command > 7){
+    if (this.lunker_command > 7) {
         this.lunker_command = 0;
         this.lunker_mode = !this.lunker_mode;
-    }}
+    }
+}
 
-TitleMain.prototype.draw = function() {
+TitleMain.prototype.draw = function () {
     if(this.lunker_mode) {
 		this.game.draw("bg", 0, 0, 0, 240, 320, 240);
-		this.game.draw("msg", (g_width - 256) / 2 + this.offset_x  , 160 + this.offset_y + (g_height-240)/2 , 0 , 64 , 256 , 16);
+		this.game.draw("msg", (g_width - 256) / 2 + this.offset_x, 160 + this.offset_y + (g_height - 240) / 2, 0, 64, 256, 16);
 	}else{
 		this.game.draw("bg", 0, 0, 0, 0, 320, 240);
-		this.game.draw("msg", (g_width - 256) / 2 + this.offset_x  , 160 + this.offset_y + (g_height-240)/2 , 0 , 64 + 16 , 256 , 16);
+		this.game.draw("msg", (g_width - 256) / 2 + this.offset_x, 160 + this.offset_y + (g_height - 240) / 2, 0, 64+16, 256, 16);
     }
 
-    this.game.draw("msg", (g_width - 256) / 2 ,  32 + (g_height-240)/2 , 0 , 0 , 256 , 64);
+    this.game.draw("msg", (g_width - 256) / 2, 32 + (g_height - 240) / 2, 0, 0, 256, 64);
 }
 
 function OpeningMain(game) {
-//    this.initialize.apply(this, arguments);
     GameState.call(this, game);
 
     this.game.bgm.play("bgm1");
@@ -89,10 +87,10 @@ OpeningMain.prototype.SCROLL_LEN = 416;
 OpeningMain.prototype.SCROLL_SPEED = 3;
 
 OpeningMain.prototype.update = function () {
-    this.timer ++;
+    this.timer++;
 
-    if( this.game.key.isPressAction() ) this.timer+=20;
-    if( this.timer / this.SCROLL_SPEED > this.SCROLL_LEN + g_height){
+    if (this.game.key.isPressAction()) this.timer += 20;
+    if (this.timer / this.SCROLL_SPEED > this.SCROLL_LEN + g_height) {
         this.setMsg(GAMESTATE.MSG_REQ_GAME);
         this.game.bgm.stop();
     }
@@ -100,12 +98,81 @@ OpeningMain.prototype.update = function () {
 
 OpeningMain.prototype.draw = function () {
 	this.game.draw("bg", 0, 0, 0, 480, 320, 240);
-
-    this.game.draw("msg" , (g_width - 256) / 2 , g_height - (this.timer / this.SCROLL_SPEED) ,0 , 160, 256 , this.SCROLL_LEN);
+	
+    this.game.draw("msg", (g_width - 256) / 2, g_height - (this.timer / this.SCROLL_SPEED), 0, 160, 256, this.SCROLL_LEN);
 }
 
+ENDINGMAIN_STATE = {
+    STAFFROLL: 0,
+    RESULT: 1
+}
+
+function EndingMain(game) {
+    GameState.call(this, game);
+
+    this.game.bgm.play("bgm1");
+}
+
+EndingMain.prototype = new GameState;
+EndingMain.prototype.timer = 0;
+EndingMain.prototype.state = ENDINGMAIN_STATE.STAFFROLL;
+EndingMain.prototype.SCROLL_LEN = 1088;
+EndingMain.prototype.SCROLL_SPEED = 3;
+
+EndingMain.prototype.update = function () {
+    this.timer++;
+    switch (this.state) {
+        case ENDINGMAIN_STATE.STAFFROLL:
+            if (this.game.key.isPressAction()) {
+                this.timer += 20;
+            }
+            if (this.timer / this.SCROLL_SPEED > this.SCROLL_LEN + g_height) {
+                this.timer = 0;
+                this.state = ENDINGMAIN_STATE.RESULT;
+
+                this.game.bgm.stopWithFade(5000);
+            }
+            break;
+        case ENDINGMAIN_STATE.RESULT:
+            if (this.game.key.isPushAction() && this.timer > 5) {
+                // 条件を満たしていると隠し画面へ
+                if (this.game.playerData.isGetOmega()) {
+                    if (this.game.playerData.lunker_mode) {
+                        this.setMsg(GAMESTATE.MSG_REQ_SECRET2);
+                    } else {
+                        this.setMsg(GAMESTATE.MSG_REQ_SECRET1);
+                    }
+                } else {
+                    this.setMsg(GAMESTATE.MSG_REQ_TITLE);
+                }
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+EndingMain.prototype.draw = function () {
+	this.game.draw("bg", 0, 0, 0, 480, 320, 240);
+
+    switch (this.state) {
+        case ENDINGMAIN_STATE.STAFFROLL:
+            this.game.draw("msg", (g_width - 256) / 2, g_height - (this.timer / this.SCROLL_SPEED),
+                0, 576, 256, this.SCROLL_LEN);
+            break;
+        case ENDINGMAIN_STATE.RESULT:
+            this.game.draw("msg", (g_width - 256) / 2, (g_height - 160) / 2, 0, 1664, 256, 160);
+
+            this.game.drawFont("" + this.game.playerData.getItemCount(), (g_width - 10 * 0)/ 2,  (g_height - 160) / 2 + 13 * 5 + 2);
+            this.game.drawFont("" + this.game.playerData.playtime, (g_width - 13)/ 2 ,  (g_height - 160) / 2 + 13 * 8 + 2);
+            break;
+        default:
+            break;
+    }
+}
+
+
 function GameMain(game) {
-//    this.initialize.apply(this, arguments);
     GameState.call(this, game);
 
     var f = new Field(this.game.playerData);
@@ -143,19 +210,21 @@ Game.prototype = {
     player: null,
     playerData: null,
     key: null,
-    initialize: function() {
+    initialize: function () {
         this.playerData = new PlayerData(GAMEMODE.NORMAL);
 
     },
-    start: function() {
+    start: function () {
         var self = this;
         this.self = self;
 
         this.player = new Player(this);
 
-        this._intervalId = setInterval(function() {self.loop();}, 1000 / self.fps);
+        this._intervalId = setInterval(function () {
+            self.loop();
+        }, 1000 / self.fps);
     },
-    loop: function() {
+    loop: function () {
         if (this.gameState == null) {
             this.gameState = new TitleMain(this.self);
         } else {
@@ -169,18 +238,48 @@ Game.prototype = {
                 case GAMESTATE.MSG_REQ_GAME:
                     this.gameState = new GameMain(this);
                     break;
+                case GAMESTATE.MSG_REQ_ENDING:
+                    this.gameState = new EndingMain(this);
+                    break;
+                case GAMESTATE.MSG_REQ_SECRET1:
+                    this.gameState = new SecretMain(this, 1);
+                    break;
+                case GAMESTATE.MSG_REQ_SECRET2:
+                    this.gameState = new SecretMain(this, 2);
+                    break;
             }
         }
         this.gameState.update();
         this.gameState.draw();
         this.key.update();
     },
-    fillRect: function(x, y, w, h, r, g, b) {
+    fillRect: function (x, y, w, h, r, g, b) {
         this.context.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
         this.context.fillRect(x, y, w, h);
     },
-    draw: function(key, px, py, sx, sy, sw, sh) {
+    draw: function (key, px, py, sx, sy, sw, sh) {
         this.context.drawImage(this.img[key], sx, sy, sw, sh, px, py, sw, sh);
+    },
+    drawFont: function (msg, x, y) {
+        var len = msg.length;
+        for (var n = 0 ; n < len ; n ++) {
+            var c = msg.charCodeAt(n);
+
+            var idx = ~~c;
+            if(idx == 32)
+            {
+                x += 9; // スペース
+                continue;
+            }
+            var img = this.font.fonts[idx];
+
+            if (typeof img != "undefined") {
+                this.context.drawImage(img, x, y);
+                x += this.font.fonts[idx].width;
+            } else {
+                x += 9;
+            }
+        }
     }
 }
 
@@ -211,20 +310,42 @@ function init() {
     game.bgm = bgm;
 
     game.img = {};
-    var img = new Image();
-    img.src = "resource/image/ino.png";
-    img.onload = function() {
-        game.img['ino'] = img;
-        var ximg = new Image();
-        ximg.src = "resource/image/msg.png";
-        ximg.onload = function() {
-            game.img['msg'] = ximg;
-			var bgimg = new Image();
-			bgimg.src = "resource/image/bg.png";
-			bgimg.onload = function() {
-				game.img['bg'] = bgimg;
-				game.start();
-			}
+    
+    async.waterfall([
+        function (callback) {
+            var img = new Image();
+            img.src = "resource/image/ino.png";
+            img.onload = function () {
+                game.img['ino'] = img;
+                callback();
+            }
+        },
+        function (callback) {
+            var img = new Image();
+            img.src = "resource/image/msg.png";
+            img.onload = function () {
+                game.img['msg'] = img;
+                callback();
+            }
+        },
+        function (callback) {
+            var img = new Image();
+            img.src = "resource/image/bg.png";
+            img.onload = function () {
+                game.img['bg'] = img;
+                callback();
+            }
+        },
+        function (callback) {
+            var font = new Font();
+            font.load("resource/font");
+            game.font = font;
+            callback();
+        },
+        function () {
+            game.start();
         }
-    }
+    ], function(err, result) {
+
+    });
 }
