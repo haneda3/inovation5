@@ -187,7 +187,7 @@ SecretMain.prototype.update = function () {
 }
 
 SecretMain.prototype.draw = function () {
-    this.game.fillRect(0,0,g_width,g_height,0,0,0);
+	this.game.draw("bg", 0, 0, 0, 240, 320, 240);
 
     if(this.number == 1){
         this.game.draw("msg" , (g_width - 256) / 2 , (g_height - 96) / 2 ,
