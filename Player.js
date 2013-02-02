@@ -453,12 +453,22 @@ Player.prototype = {
 
         // 取ったアイテム一覧
         for(var t=FIELD.ITEM_FUJI ; t<FIELD.ITEM_MAX ; t++){
-            if(!this.playerData.itemGetFlags[t] || (this.playerData.isItemForClear(t) && this.timer % 10 < 5)){
+            if(!this.playerData.itemGetFlags[t]){
                 game.draw("ino" , g_width - CHAR_SIZE / 4 * (FIELD.ITEM_MAX - 2 - t) , 0 ,	// 無
                     CHAR_SIZE * 5 , 128 + CHAR_SIZE , CHAR_SIZE / 4 , CHAR_SIZE / 2);
             }else{
-                game.draw("ino" , g_width - CHAR_SIZE / 4 * (FIELD.ITEM_MAX - 2 - t) , 0 ,	// 有
-                    CHAR_SIZE * 5 + CHAR_SIZE / 4 , 128 + CHAR_SIZE  , CHAR_SIZE / 4 , CHAR_SIZE / 2);
+				if( this.playerData.isItemForClear(t)){
+					// クリア条件アイテムは専用グラフィック
+					for(var i=0 ; i < this.playerData.clearFlagItems.length ; i++){
+						if(this.playerData.clearFlagItems[i] == t){
+							game.draw("ino" , g_width - CHAR_SIZE / 4 * (FIELD.ITEM_MAX - 2 - t) , 0 ,
+								CHAR_SIZE * 5 + CHAR_SIZE / 4 * (i + 2) , 128 + CHAR_SIZE  , CHAR_SIZE / 4 , CHAR_SIZE / 2);
+						}
+					}
+				}else{
+					game.draw("ino" , g_width - CHAR_SIZE / 4 * (FIELD.ITEM_MAX - 2 - t) , 0 ,	// 有
+						CHAR_SIZE * 5 + CHAR_SIZE / 4 , 128 + CHAR_SIZE  , CHAR_SIZE / 4 , CHAR_SIZE / 2);
+				}
             }
         }
 

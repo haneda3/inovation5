@@ -64,14 +64,15 @@ TitleMain.prototype.update = function () {
 }
 
 TitleMain.prototype.draw = function () {
-    if (this.lunker_mode) {
-        this.game.fillRect(0, 0, g_width, g_height, 0, 0, 0);
-    } else {
-        this.game.fillRect(0, 0, g_width, g_height, 255, 255, 255);
+    if(this.lunker_mode) {
+		this.game.draw("bg", 0, 0, 0, 240, 320, 240);
+		this.game.draw("msg", (g_width - 256) / 2 + this.offset_x, 160 + this.offset_y + (g_height - 240) / 2, 0, 64, 256, 16);
+	}else{
+		this.game.draw("bg", 0, 0, 0, 0, 320, 240);
+		this.game.draw("msg", (g_width - 256) / 2 + this.offset_x, 160 + this.offset_y + (g_height - 240) / 2, 0, 64+16, 256, 16);
     }
 
     this.game.draw("msg", (g_width - 256) / 2, 32 + (g_height - 240) / 2, 0, 0, 256, 64);
-    this.game.draw("msg", (g_width - 256) / 2 + this.offset_x, 160 + this.offset_y + (g_height - 240) / 2, 0, 64, 256, 32);
 }
 
 function OpeningMain(game) {
@@ -96,8 +97,8 @@ OpeningMain.prototype.update = function () {
 }
 
 OpeningMain.prototype.draw = function () {
-    this.game.fillRect(0, 0, g_width, g_height, 255, 255, 255);
-
+	this.game.draw("bg", 0, 0, 0, 480, 320, 240);
+	
     this.game.draw("msg", (g_width - 256) / 2, g_height - (this.timer / this.SCROLL_SPEED), 0, 160, 256, this.SCROLL_LEN);
 }
 
@@ -152,7 +153,7 @@ EndingMain.prototype.update = function () {
 }
 
 EndingMain.prototype.draw = function () {
-    this.game.fillRect(0, 0, g_width, g_height, 255, 255, 255);
+	this.game.draw("bg", 0, 0, 0, 480, 320, 240);
 
     switch (this.state) {
         case ENDINGMAIN_STATE.STAFFROLL:
@@ -186,7 +187,7 @@ SecretMain.prototype.update = function () {
 }
 
 SecretMain.prototype.draw = function () {
-    this.game.fillRect(0,0,g_width,g_height,0,0,0);
+	this.game.draw("bg", 0, 0, 0, 240, 320, 240);
 
     if(this.number == 1){
         this.game.draw("msg" , (g_width - 256) / 2 , (g_height - 96) / 2 ,
@@ -214,7 +215,12 @@ GameMain.prototype.update = function () {
 }
 
 GameMain.prototype.draw = function () {
-    this.game.fillRect(0, 0, g_width, g_height, 255, 255, 255);
+    if(this.game.playerData.lunker_mode) {
+		this.game.draw("bg", 0, 0, 0, 240, 320, 240);
+	}else{
+		this.game.draw("bg", 0, 0, 0, 0, 320, 240);
+    }
+	
     this.game.field.draw(this.game, this.game.player.view.getPosition());
     this.game.player.draw(this.game);
 }
@@ -269,8 +275,8 @@ Game.prototype = {
                     break;
             }
         }
-        this.gameState.draw();
         this.gameState.update();
+        this.gameState.draw();
         this.key.update();
     },
     fillRect: function (x, y, w, h, r, g, b) {
@@ -345,6 +351,14 @@ function init() {
             img.src = "resource/image/msg.png";
             img.onload = function () {
                 game.img['msg'] = img;
+                callback();
+            }
+        },
+        function (callback) {
+            var img = new Image();
+            img.src = "resource/image/bg.png";
+            img.onload = function () {
+                game.img['bg'] = img;
                 callback();
             }
         },

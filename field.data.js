@@ -5,7 +5,7 @@ var field_data = "\
  U  UUUUUUU         BB     H UUUUUUUUUUUUUUUBBB         UU             U     B  p   B\n\
  UU                 B     lBUU                          UU             UUUUUUB BBBB B\n\
  UU          BBBBBBBB   BBBBBBBBBBBBBB                UUUU  BBBBBBBBB        H B hB B\n\
-UUUU  BBBBBHBB                       BB             UUUU    Br      BB      UBUB  B B\n\
+UUUU  BBBBHHBB                       BB             UUUU    Br      BB      UBUB  B B\n\
 U     B    H         ~~~              B             U      BBU       BBBBUUUU* B~~B *\n\
 U    UB    B                          B             U     BB  UU       BB    B B  B B\n\
 U    UB    B a           ~~~~         B            UU      B       UUUBBB    B B~~B B\n\
@@ -24,16 +24,16 @@ UU    B            ~~~~               BBBBBBBBBBBBBBBBB     U             BB B B
    U   UBUUUUU        UUUUUUUUUUUUU                              BB        U                   B   BB *   *\n\
    U   UB ~~  ~~  ~~                    <<<<<<  <<<<<<<<<<<<<<<<<<<        U*UU                B  BBB *   *\n\
    U  UUB~  ~~  ~~                       B   B       B                      o                  B    B *   *\n\
-   UU   B ~~  ~~  ~~                     B   >>>>>>> B              BBBBBBBBBBBBBBBBBBBHB      BB   B *   *\n\
-   UU   B~~~   ~~~   ~~~                 B BBBBBBBBB BBHBBBBBBBBBBBBB                   BBBBBBBBBB  B *  L*\n\
+   UU   B ~~  ~~  ~~                     B   >>>>>>> BB             BBBBBBBBBBBBBBBBBBBBB      BB   B *   *\n\
+   UU   B~~~   ~~~   ~~~                 B BBBBBBBBB BBHBBBBBBBBBBBBB                   BHBBBBBBBB  B *  L*\n\
    UUU  B   ~~~   ~~~   ~~~              B B          *                           e     U      B    B *   *\n\
  UUU   UB~~~i  ~~~   ~~~   ~~~           B B                                   IIIIIBBB U      B   BB *   *\n\
 UU     UB*  ~~~   ~~~   ~~~   ~~~        BBB                          IIIII         B          B  BBB *   *\n\
-U     UUBBBBBBB<<<<<<BBB>>>>>>BBBBB                       >>>>>>>>                  B          B    B *   *\n\
-U                                 BBBBBBBBBB~     B   B                             B         nB<<<~B *   *\n\
-U UUU                                      B    ~~ BBB ~~                         P B        BBB    B *   *\n\
-U~UUUUUUUUUUUUUUUUUUUUUUUUUUUUUU           B ~~B    k    B~~               BBB   BBBB          B~>>>B *   *\n\
-U UUU                          UUUUUUUUU   B    BBBBBBBBB            BBB                       B    B *   *\n\
+U     UUBHHBBBB<<<<<<BBB>>>>>>BBBBB                       >>>>>>>>                  B          B    B *   *\n\
+U          U                      BBBBBBBBBB~     B   B                             B         nB<<<~B *   *\n\
+U UUU     UU                               B    ~~ BBB ~~                         P B        BBB    B *   *\n\
+U~UUUUU                                    B ~~B    k    B~~               BBB   BBBB          B~>>>B *   *\n\
+U UUU UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU   B    BBBBBBBBB            BBB                       B    B *   *\n\
 U~ U                                   U   B~                                   ***          BBB~~~~B *   *\n\
 B  UUUUU                               U   H~~B~                c        B~~B                       * *   *\n\
 B~~U   UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUBBBBBBBBBBBBBBBB*BBBBBBBBBBBBBB~~BBBBBBBBB>>>>>>IIIIIIIIII *   *\n\
@@ -46,8 +46,8 @@ B~~B            <    <   BBBBB                                  U        B<<<<<<
 B  B                                      <<<<<<  BBBB~B        B        B         B         B            H    U\n\
 B~~B                                                   BBB      B        B~>>>>>>>>BBHHHHHHHBB            H    U\n\
 B  B                                                  ~BBBBB    B        B                           q    BU   U\n\
-B~~B                                                   BB  BBB  BUUUUUUUUBBBIIIIIII IIIIIIII<<<IIIIIIIIBBBBU   U\n\
-B                                                     ~BB    B                       I                     UU  U\n\
+B~~B                                                   B   BBB  BUUUUUUUUBBBIIIIIII IIIIIIII<<<IIIIIIIIBBBBU   U\n\
+B                                                     ~H     B                       I                     UU  U\n\
 BBBB~~       ~~~               ~~~   ~~                BB P  HBB<<<<<<<<<<<<<<<<<<<<<<                        UU\n\
 B       ~~~       ~~~   ~~   ~~          ~~~   ~~   ~~~~~~~~ H                                                UU\n\
 ************************************************************BBUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU\n\
