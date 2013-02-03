@@ -309,7 +309,7 @@ Game.prototype = {
     }
 }
 
-function init() {
+function init(gameMode) {
     var canvas = document.getElementById('canvas');
     if (!canvas || !canvas.getContext) {
         return false;
@@ -336,11 +336,17 @@ function init() {
     game.bgm = bgm;
 
     game.img = {};
-    
+
+    imgDir = "color";
+    if (gameMode == "mono") {
+        imgDir = "mono";
+    }
+    imgDir = "resource/image/" + imgDir;
+
     async.waterfall([
         function (callback) {
             var img = new Image();
-            img.src = "resource/image/ino.png";
+            img.src =  imgDir + "/ino.png";
             img.onload = function () {
                 game.img['ino'] = img;
                 callback();
@@ -348,7 +354,7 @@ function init() {
         },
         function (callback) {
             var img = new Image();
-            img.src = "resource/image/msg.png";
+            img.src = imgDir + "/msg.png";
             img.onload = function () {
                 game.img['msg'] = img;
                 callback();
@@ -356,7 +362,7 @@ function init() {
         },
         function (callback) {
             var img = new Image();
-            img.src = "resource/image/bg.png";
+            img.src = imgDir + "/bg.png";
             img.onload = function () {
                 game.img['bg'] = img;
                 callback();
