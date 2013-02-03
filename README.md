@@ -6,5 +6,7 @@ inovation5
 - Google Chrome と Firefox で動作
 - 一応WIiUのWebブラウザでも動作します(重すぎるけど)
 
+プレイは[こちら](http://haneda3.github.com/inovation5/)
+
 
 _原作者さんによるカラー化と調整が行われました！やったね！_
