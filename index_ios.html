@@ -3,6 +3,7 @@
 <head>
     <title></title>
     <meta charset="utf-8">
+    <meta name=”viewport” content=”width=320”>
     <script src="async/lib/async.js"></script>
     <script src="MyAudio.js"></script>
     <script src="InputDevice.js"></script>
@@ -14,8 +15,9 @@
     <script src="Font.js"></script>
     <script src="main.js"></script>
 </head>
-<body onload="if(window.confirm('カラフルなのがお好き？')){init('color');}else{init('mono');};"></body>
+<body onload="if(window.confirm('カラフルなのがお好き？')){init('color', text);}else{init('mono', text);};"></body>
 <canvas id="canvas" width="320" height="240"></canvas>
+<input id="text" type="text" size="1px" />
 <p style="font-size: x-small">
 <a href="index.html">PC版</a> / <a href="index_ios.html">iOS版</a><br />
 <a href="https://github.com/haneda3/inovation5">そーす</a> <a href="http://o-mega.sakura.ne.jp/product/ino.html">もとねた</a>

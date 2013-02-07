@@ -284,7 +284,7 @@ Game.prototype = {
         this.context.fillRect(x, y, w, h);
     },
     draw: function (key, px, py, sx, sy, sw, sh) {
-        this.context.drawImage(this.img[key], sx, sy, sw, sh, px, py, sw, sh);
+        this.context.drawImage(this.img[key], ~~sx, ~~sy, sw, sh, ~~px, ~~py, sw, sh);
     },
     drawFont: function (msg, x, y) {
         var len = msg.length;
@@ -309,10 +309,14 @@ Game.prototype = {
     }
 }
 
-function init(gameMode) {
+function init(gameMode, inputField) {
     var canvas = document.getElementById('canvas');
     if (!canvas || !canvas.getContext) {
         return false;
+    }
+
+    if (typeof(inputField) === 'undefined') {
+        inputField = window;
     }
 
     var se = new SoundEffect();
@@ -331,7 +335,7 @@ function init(gameMode) {
     game.context = canvas.getContext('2d');
 //    alert('cx');
 
-    game.key = new InputDevice();
+    game.key = new InputDevice(inputField);
     game.se = se;
     game.bgm = bgm;
 

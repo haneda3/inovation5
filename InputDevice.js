@@ -41,10 +41,10 @@ function InputDevice() {
 InputDevice.prototype = {
     keyFlags: 0x00,
     keyFlagsPrev: 0x00,
-    initialize: function() {
+    initialize: function(inputField) {
         var self = this;
-        window.addEventListener('keydown',function(evt) {self.keydown(evt); },true);
-        window.addEventListener('keyup',function(evt) {self.keyup(evt); },true);
+        inputField.addEventListener('keydown',function(evt) {self.keydown(evt); },true);
+        inputField.addEventListener('keyup',function(evt) {self.keyup(evt); },true);
     },
     keydown: function(event) {
         var keyCode = event.keyCode;
