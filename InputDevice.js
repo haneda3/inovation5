@@ -5,7 +5,25 @@ KEY_CODE = {
     DOWN: 40,
     ENTER: 32,
     SPACE: 13
-};
+}
+
+KEY_CODE_UP_ICADE = {
+    RIGHT: 67, //'c',
+    LEFT: 81, // 'q',
+    UP: 69, // 'e',
+    DOWN: 90,// 'z',
+    ENTER: 70, // 'f',
+    SPACE: 86 // 'v'
+}
+
+KEY_CODE_DOWN_ICADE = {
+    LEFT: 65, //'a',
+    RIGHT: 68, //'d',
+    UP: 87, //'w',
+    DOWN: 88, //'x',
+    ENTER: 85, //'u',
+    SPACE: 76 //'l'
+}
 
 INPUT_BIT = {
     LEFT: 0x01,
@@ -30,7 +48,20 @@ InputDevice.prototype = {
     },
     keydown: function(event) {
         var keyCode = event.keyCode;
-        var bit = this.getKeyBit(keyCode);
+
+        // for iCade
+        bit = this.getICadeKeyBitUp(keyCode);
+        if (bit != null) {
+            this.keyFlags &= ~bit;
+            event.preventDefault();
+            return;
+        }
+
+        bit = this.getICadeKeyBitDown(keyCode);
+        if (bit == null) {
+            bit = this.getKeyBit(keyCode);
+        }
+
         if (bit == null) {
             return;
         }
@@ -40,6 +71,7 @@ InputDevice.prototype = {
 
     keyup: function(event) {
         var keyCode = event.keyCode;
+
         var bit = this.getKeyBit(keyCode);
         if (bit == null) {
             return;
@@ -98,6 +130,28 @@ InputDevice.prototype = {
             case KEY_CODE.RIGHT:    return INPUT_BIT.RIGHT;
             case KEY_CODE.UP:    return INPUT_BIT.UP;
             case KEY_CODE.DOWN:    return INPUT_BIT.DOWN;
+            default:    return null;
+        }
+    },
+    getICadeKeyBitUp: function(keyCode) {
+        switch (keyCode) {
+            case KEY_CODE_UP_ICADE.ENTER:    return INPUT_BIT.ENTER;
+            case KEY_CODE_UP_ICADE.SPACE:    return INPUT_BIT.SPACE;
+            case KEY_CODE_UP_ICADE.LEFT:    return INPUT_BIT.LEFT;
+            case KEY_CODE_UP_ICADE.RIGHT:    return INPUT_BIT.RIGHT;
+            case KEY_CODE_UP_ICADE.UP:    return INPUT_BIT.UP;
+            case KEY_CODE_UP_ICADE.DOWN:    return INPUT_BIT.DOWN;
+            default:    return null;
+        }
+    },
+    getICadeKeyBitDown: function(keyCode) {
+        switch (keyCode) {
+            case KEY_CODE_DOWN_ICADE.ENTER:    return INPUT_BIT.ENTER;
+            case KEY_CODE_DOWN_ICADE.SPACE:    return INPUT_BIT.SPACE;
+            case KEY_CODE_DOWN_ICADE.LEFT:    return INPUT_BIT.LEFT;
+            case KEY_CODE_DOWN_ICADE.RIGHT:    return INPUT_BIT.RIGHT;
+            case KEY_CODE_DOWN_ICADE.UP:    return INPUT_BIT.UP;
+            case KEY_CODE_DOWN_ICADE.DOWN:    return INPUT_BIT.DOWN;
             default:    return null;
         }
     },
