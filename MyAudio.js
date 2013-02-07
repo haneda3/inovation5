@@ -4,9 +4,15 @@ function MyAudio() {
 
 MyAudio.prototype = {
     audios: {},
-    initialize: function () {
+    enabled: true,
+    initialize: function (enabled) {
+        var ua = navigator.userAgent;
+        if(/iPhone/.test(ua) || /iPad/.test(ua)) {
+            this.enabled = false;
+        }
     },
     load: function (key, path, loop) {
+        if (this.enabled == false) return;
         if (typeof(loop) === 'undefined') loop = false;
 
         var audio = new Audio(path);
@@ -15,9 +21,13 @@ MyAudio.prototype = {
         this.audios[key] = audio;
     },
     play: function (key) {
+        if (this.enabled == false) return;
+
         this.audios[key].play();
     },
     stop: function (key) {
+        if (this.enabled == false) return;
+
         var audio = this.audios[key];
         if (audio.ended == false) {
             audio.pause();
@@ -25,11 +35,15 @@ MyAudio.prototype = {
         }
     },
     setVolume: function (key, volume) {
+        if (this.enabled == false) return;
+
         var audio = this.audios[key];
         audio.volume = volume;
     },
     // duration(ms)
     stopWithFade: function (key, duration) {
+        if (this.enabled == false) return;
+
         var audio = this.audios[key];
 
         var interval = 50; // ms
