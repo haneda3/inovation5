@@ -38,13 +38,151 @@ function InputDevice() {
     this.initialize.apply(this, arguments);
 }
 
+function myTouchEvent(evt) {
+    var touches = evt.changedTouches;
+    console.log("Atouchstart: " + touches.length);
+    for (var i = 0; i < touches.length; i++) {
+        var touch = touches[i];
+        console.log(touch.identifier + " x:" + touch.pageX + " y:" + touch.pageY);
+
+        var x = touch.pageX - evt.target.getBoundingClientRect().left;
+        var y = touch.pageY - evt.target.getBoundingClientRect().top;
+        if (x < 40) {
+            self.touchArrow = INPUT_BIT.LEFT;
+        } else {
+            self.touchArrow = INPUT_BIT.RIGHT;
+        }
+        self.keyFlags |= self.touchArrow;
+    }
+
+    evt.preventDefault();
+}
+
 InputDevice.prototype = {
     keyFlags: 0x00,
     keyFlagsPrev: 0x00,
-    initialize: function(inputField) {
+     touchId: null,
+     touchArrow: 0x00,
+
+    initialize: function(inputField, touchTargetArrow, touchTargetAction) {
         var self = this;
         inputField.addEventListener('keydown',function(evt) {self.keydown(evt); },true);
         inputField.addEventListener('keyup',function(evt) {self.keyup(evt); },true);
+
+        touchTargetArrow.addEventListener("touchstart", function(evt) {self.myTouchEvent(evt); }, false);
+        touchTargetArrow.addEventListener("touchmove", function(evt) {self.myTouchEventMove(evt); }, false);
+        touchTargetArrow.addEventListener("touchend", function(evt) {self.myTouchEventEnd(evt); }, false);
+
+        touchTargetAction.addEventListener("touchstart", function(evt) {self.myTouchEventAction(evt); }, false);
+        touchTargetAction.addEventListener("touchend", function(evt) {self.myTouchEventActionEnd(evt); }, false);
+    },
+
+    myTouchEvent: function(evt) {
+        var touches = evt.changedTouches;
+        console.log("Atouchstart: " + touches.length);
+        for (var i = 0; i < touches.length; i++) {
+            var touch = touches[i];
+            console.log(touch.identifier + " x:" + touch.pageX + " y:" + touch.pageY);
+
+            var x = touch.pageX - evt.target.getBoundingClientRect().left;
+            var y = touch.pageY - evt.target.getBoundingClientRect().top;
+            if (x < 40) {
+                this.touchArrow = INPUT_BIT.LEFT;
+                evt.target.className = "padArrow padArrowLeft";
+            } else {
+                this.touchArrow = INPUT_BIT.RIGHT;
+                evt.target.className = "padArrow padArrowRight";
+            }
+//            this.touchArrow = nextArrow;
+            this.keyFlags |= this.touchArrow;
+        }
+
+        evt.preventDefault();
+    },
+
+    myTouchEventMove: function(evt) {
+        var touches = evt.changedTouches;
+        console.log("Atouchmove: " + touches.length);
+        for (var i = 0; i < touches.length; i++) {
+            var touch = touches[i];
+            console.log(touch.identifier + " x:" + touch.pageX + " y:" + touch.pageY);
+
+            var x = touch.pageX - evt.target.getBoundingClientRect().left;
+            var y = touch.pageY - evt.target.getBoundingClientRect().top;
+
+            var nextArrow = 0x00;
+            if (x < 40) {
+                nextArrow = INPUT_BIT.LEFT;
+                evt.target.className = "padArrow padArrowLeft";
+            } else {
+                nextArrow = INPUT_BIT.RIGHT;
+                evt.target.className = "padArrow padArrowRight";
+            }
+
+            if (nextArrow != self.touchArrow) {
+                this.keyFlags &= ~this.touchArrow;
+                this.touchArrow = nextArrow;
+                this.keyFlags |= this.touchArrow;
+            }
+        }
+
+        evt.preventDefault();
+    },
+
+    myTouchEventEnd: function(evt) {
+        var touches = evt.changedTouches;
+        console.log("Atouchend: " + touches.length);
+        for (var i = 0; i < touches.length; i++) {
+            var touch = touches[i];
+            console.log(touch.identifier + " x:" + touch.pageX + " y:" + touch.pageY);
+
+            var x = touch.pageX - evt.target.getBoundingClientRect().left;
+            var y = touch.pageY - evt.target.getBoundingClientRect().top;
+
+            evt.target.className = "padArrow";
+
+            /*
+            if (x < 40) {
+                self.touchArrow = INPUT_BIT.LEFT;
+            } else {
+                self.touchArrow = INPUT_BIT.RIGHT;
+            }
+            self.keyFlags |= self.touchArrow;
+            */
+            this.keyFlags &= ~this.touchArrow;
+            this.touchArrow = 0x00;
+        }
+
+        evt.preventDefault();
+    },
+
+    myTouchEventAction: function(evt) {
+        var touches = evt.changedTouches;
+        console.log("touchstart: " + touches.length);
+        for (var i = 0; i < touches.length; i++) {
+            var touch = touches[i];
+            console.log(touch.identifier);
+
+            evt.target.className = "padAction padActionFocus";
+
+            // action
+            this.keyFlags |= INPUT_BIT.SPACE;
+        }
+        evt.preventDefault();
+    },
+    myTouchEventActionEnd: function(evt) {
+        var touches = evt.changedTouches;
+        console.log("touchend: " + touches.length);
+        for (var i = 0; i < touches.length; i++) {
+            var touch = touches[i];
+            console.log(touch.identifier);
+
+            evt.target.className = "padAction";
+
+            // action
+            this.keyFlags &= ~INPUT_BIT.SPACE;
+        }
+        evt.preventDefault();
     },
     keydown: function(event) {
         var keyCode = event.keyCode;

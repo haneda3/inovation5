@@ -319,6 +319,10 @@ function init(gameMode, inputField) {
         inputField = window;
     }
 
+//    var hammertime = Hammer(canvas).on("tap", function(evt) {
+//        alert('hello!');
+//    });
+
     var se = new SoundEffect();
     se.load("heal", "resource/sound/heal.wav");
     se.load("itemget", "resource/sound/itemget.wav");
@@ -335,7 +339,11 @@ function init(gameMode, inputField) {
     game.context = canvas.getContext('2d');
 //    alert('cx');
 
-    game.key = new InputDevice(inputField);
+//    var paddiv = document.getElementById('paddiv');
+    var padArrow = document.getElementById('padArrow');
+    var padAction = document.getElementById('padAction');
+
+    game.key = new InputDevice(inputField, padArrow, padAction);
     game.se = se;
     game.bgm = bgm;
 

@@ -3,6 +3,9 @@
 <head>
     <title></title>
     <meta charset="utf-8">
+    <meta name="viewport" content="user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="async/lib/async.js"></script>
     <script src="MyAudio.js"></script>
     <script src="InputDevice.js"></script>
@@ -13,9 +16,70 @@
     <script src="Player.js"></script>
     <script src="Font.js"></script>
     <script src="main.js"></script>
-</head>
+    <style TYPE="text/css">
+        .divcv {
+            position: relative;
+            top: 0;
+            left: 0;
+            width: 320px;
+            height: 320px;
+            z-index: 0;
+            background-color: #F8F8FF;
+        }
+        .cv {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 320px;
+            height: 240px;
+            z-index: 1;
+        }
+        .pad {
+            position: absolute;
+            top: 240px;
+            left: 0px;
+            width: 320px;
+            height: 80px;
+            z-index: 2;
+            background: #ff0000;
+            opacity: 0.4;
+        }
+        .padArrow {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 80px;
+            height: 80px;
+            background: blue;
+            opacity: 0.4;
+        }
+        .padArrowLeft {
+            opacity: 0.2;
+        }
+        .padArrowRight {
+            opacity: 0.9;
+        }
+        .padAction {
+            position: absolute;
+            left: 240px;
+            top: 0px;
+            width: 80px;
+            height: 80px;
+            background: blue;
+            opacity: 0.4;
+        }
+        .padActionFocus {
+            opacity: 0.7;
+        }
+    </style>
+    </head>
 <body onload="if(window.confirm('カラフルなのがお好き？')){init('color');}else{init('mono');};"></body>
-<canvas id="canvas" width="320" height="240"></canvas>
+<div class="divcv"></div>
+<canvas class="cv" id="canvas" width="320" height="240"></canvas>
+<div class="pad" id="paddiv">
+    <div class="padArrow" id="padArrow"></div>
+    <div class="padAction" id="padAction"></div>
+</div>
 <p style="font-size: x-small">
 <a href="index.html">PC版</a> / <a href="index_ios.html">iOS版</a><br />
 <a href="https://github.com/haneda3/inovation5">そーす</a> <a href="http://o-mega.sakura.ne.jp/product/ino.html">もとねた</a>
