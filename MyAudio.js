@@ -5,15 +5,18 @@ function MyAudio() {
 MyAudio.prototype = {
     audios: {},
     enabled: true,
-    initialize: function (enabled) {
-        var ua = navigator.userAgent;
-        if(/iPhone/.test(ua) || /iPad/.test(ua)) {
-            this.enabled = false;
-        }
+    titanium: false,
+    initialize: function () {
     },
     load: function (key, path, loop) {
-        if (this.enabled == false) return;
         if (typeof(loop) === 'undefined') loop = false;
+        
+        if (this.enabled == false) return;
+
+		if (this.titanium) {
+			Ti.App.fireEvent("Audio_load", {key:key, path:path, loop:loop});
+			return;
+		}
 
         var audio = new Audio(path);
         audio.autoplay = false;
@@ -23,11 +26,21 @@ MyAudio.prototype = {
     play: function (key) {
         if (this.enabled == false) return;
 
+		if (this.titanium) {
+			Ti.App.fireEvent("Audio_play", {key:key});
+			return;
+		}
+		
         this.audios[key].play();
     },
     stop: function (key) {
         if (this.enabled == false) return;
 
+		if (this.titanium) {
+			Ti.App.fireEvent("Audio_stop", {key:key});
+			return;
+		}
+		
         var audio = this.audios[key];
         if (audio.ended == false) {
             audio.pause();
@@ -37,6 +50,11 @@ MyAudio.prototype = {
     setVolume: function (key, volume) {
         if (this.enabled == false) return;
 
+		if (this.titanium) {
+			Ti.App.fireEvent("Audio_setVolume", {key:key, volume:volume});
+			return;
+		}
+		
         var audio = this.audios[key];
         audio.volume = volume;
     },
@@ -44,6 +62,10 @@ MyAudio.prototype = {
     stopWithFade: function (key, duration) {
         if (this.enabled == false) return;
 
+		if (this.titanium) {
+			return;
+		}
+		
         var audio = this.audios[key];
 
         var interval = 50; // ms
@@ -77,6 +99,15 @@ SoundEffect.prototype = {
     audio: new MyAudio(),
     initialize: function () {
     },
+    setEnabled: function(enabled) {
+    	this.audio.enabled = enabled;
+    },
+    setTitaniumMode: function(enabled) {
+    	if (enabled) {
+	    	this.setEnabled(true);
+	    	this.audio.titanium = true;
+	    }
+    },
     load: function (key, path) {
         this.audio.load(key, path, false);
     },
@@ -96,6 +127,15 @@ BGM.prototype = {
     audio: new MyAudio(),
     playingKey: null,
     initialize: function () {
+    },
+    setEnabled: function(enabled) {
+    	this.audio.enabled = enabled;
+    },
+    setTitaniumMode: function(enabled) {
+    	if (enabled) {
+	    	this.setEnabled(true);
+	    	this.audio.titanium = true;
+	    }
     },
     load: function (key, path) {
         this.audio.load(key, path, true);

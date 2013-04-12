@@ -324,6 +324,7 @@ function init(gameMode, inputField) {
 //    });
 
     var se = new SoundEffect();
+    se.setTitaniumMode(true);
     se.load("heal", "resource/sound/heal.wav");
     se.load("itemget", "resource/sound/itemget.wav");
     se.load("itemget2", "resource/sound/itemget2.wav");
@@ -331,8 +332,11 @@ function init(gameMode, inputField) {
     se.load("jump", "resource/sound/jump.wav");
 
     var bgm = new BGM();
-    bgm.load("bgm0", "resource/sound/ino1.ogg");
-    bgm.load("bgm1", "resource/sound/ino2.ogg");
+    bgm.setTitaniumMode(true);
+//    bgm.load("bgm0", "resource/sound/ino1.ogg");
+//    bgm.load("bgm1", "resource/sound/ino2.ogg");
+    bgm.load("bgm0", "resource/sound/ino1.m4a");
+    bgm.load("bgm1", "resource/sound/ino2.m4a");
 
     var game = new Game();
     game.fps = 50;
