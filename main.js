@@ -319,12 +319,23 @@ function init(gameMode, inputField) {
         inputField = window;
     }
 
-//    var hammertime = Hammer(canvas).on("tap", function(evt) {
-//        alert('hello!');
-//    });
+    var audioEnabled = true;
+    var bgmExt = ".ogg";
+    var ua = navigator.userAgent;
+    if(/iPhone/.test(ua) || /iPad/.test(ua)) {
+   		audioEnabled = false;
+   		bgmExt = ".m4a";
+    }
+
+	var titanium = false;
+	if (typeof(_titanium_) !== 'undefined') {
+		audioEnabled = true;
+		titanium = true;
+	}
 
     var se = new SoundEffect();
-    se.setTitaniumMode(true);
+    se.setEnabled(audioEnabled);
+    se.setTitaniumMode(titanium);
     se.load("heal", "resource/sound/heal.wav");
     se.load("itemget", "resource/sound/itemget.wav");
     se.load("itemget2", "resource/sound/itemget2.wav");
@@ -332,16 +343,14 @@ function init(gameMode, inputField) {
     se.load("jump", "resource/sound/jump.wav");
 
     var bgm = new BGM();
-    bgm.setTitaniumMode(true);
-//    bgm.load("bgm0", "resource/sound/ino1.ogg");
-//    bgm.load("bgm1", "resource/sound/ino2.ogg");
-    bgm.load("bgm0", "resource/sound/ino1.m4a");
-    bgm.load("bgm1", "resource/sound/ino2.m4a");
+    bgm.setEnabled(audioEnabled);
+    bgm.setTitaniumMode(titanium);
+    bgm.load("bgm0", "resource/sound/ino1" + bgmExt);
+    bgm.load("bgm1", "resource/sound/ino2" + bgmExt);
 
     var game = new Game();
     game.fps = 50;
     game.context = canvas.getContext('2d');
-//    alert('cx');
 
 //    var paddiv = document.getElementById('paddiv');
     var padArrow = document.getElementById('padArrow');
